@@ -103,9 +103,9 @@
         
         async function fetchHistory() {
             const btn = document.getElementById('btn-refresh');
-            const btnFilter = document.getElementById('btn-filter');
+            const btnFilterBtn = document.getElementById('btn-filter');
             if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-            if(btnFilter) btnFilter.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
+            if(btnFilterBtn) btnFilterBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
             
             const startDate = document.getElementById('filter_start').value;
             const endDate = document.getElementById('filter_end').value;
@@ -140,8 +140,7 @@
             }
             
             if(btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Refresh';
-            const btnFilter = document.getElementById('btn-filter');
-            if(btnFilter) btnFilter.innerHTML = '<i class="fa-solid fa-filter"></i> Terapkan Filter';
+            if(btnFilterBtn) btnFilterBtn.innerHTML = '<i class="fa-solid fa-filter"></i> Terapkan Filter';
         }
 
         document.addEventListener('DOMContentLoaded', fetchHistory);
