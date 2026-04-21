@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan - Monitoring Listrik Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="antialiased text-gray-200">
+    
+    <div id="layout-wrapper">
+        <!-- Sidebar Container (Loads dynamically via JS) -->
+        <div id="sidebar-container" style="display: contents;"></div>
+
+        <main id="main-content">
+            <header class="topbar">
+                <div class="flex items-center gap-4">
+                    <button class="mobile-toggle" id="sidebar-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold text-white">Pengaturan Sistem</h2>
+                </div>
+            </header>
+
+            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <form id="settings-form">
+                        
+                        <!-- Panel 1: Sistem Utama -->
+                        <div class="glass p-6 sm:p-8 rounded-2xl border border-gray-700/50 relative overflow-hidden mb-6 group hover:border-gray-500/50 transition">
+                            <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 group-hover:opacity-20 transition"></div>
+                            <div class="flex items-center gap-4 mb-6">
+                                <span class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl"><i class="fa-solid fa-bolt text-xl"></i></span>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-200">Konfigurasi Tarif Dasar</h3>
+                                    <p class="text-sm text-gray-400">Penyetelan simulasi estimasi biaya otomatis.</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Tarif Listrik (Rp/kWh)</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                                        <b>Rp</b>
+                                    </div>
+                                    <input type="number" id="tarif_per_kwh" class="w-full pl-12 bg-gray-900 border border-gray-700 focus:border-emerald-500 focus:ring-emerald-500/20 py-3 rounded-xl transition" placeholder="1444.70" step="0.01" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Bot Telegram -->
+                        <div class="glass p-6 sm:p-8 rounded-2xl border border-gray-700/50 relative overflow-hidden mb-6 group hover:border-blue-500/30 transition">
+                            <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 group-hover:opacity-20 transition"></div>
+                            
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-gray-700/50">
+                                <div class="flex items-center gap-4">
+                                    <span class="p-3 bg-blue-500/10 text-blue-400 rounded-xl"><i class="fa-brands fa-telegram text-2xl"></i></span>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-200">Sistem Peringatan Telegram</h3>
+                                        <p class="text-sm text-gray-400">Konfigurasi notifikasi ambang batas otomatis.</p>
+                                    </div>
+                                </div>
+                                <label class="inline-flex items-center cursor-pointer bg-gray-800/80 px-4 py-2 rounded-xl border border-gray-700 shadow-inner">
+                                    <input type="checkbox" id="telegram_active" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[10px] after:start-[18px] after:bg-gray-300 after:border-gray-500 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500 peer-checked:after:bg-white peer-checked:after:border-white relative"></div>
+                                    <span class="ms-3 text-sm font-bold text-gray-300 peer-checked:text-blue-400 transition-colors">AKTIVASI BOT</span>
+                                </label>
+                            </div>
+                            
+                            <div class="space-y-5">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Telegram Bot Token</label>
+                                        <input type="text" id="telegram_bot_token" class="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 focus:ring-blue-500/20 py-2.5 px-4 rounded-xl transition" placeholder="ex: 123456789:ABCdefGHIjklMNOpqrSTUvwxYZ">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Telegram Chat ID</label>
+                                        <input type="text" id="telegram_chat_id" class="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 focus:ring-blue-500/20 py-2.5 px-4 rounded-xl transition" placeholder="ex: 12345678">
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+                                    <div class="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                        <label class="block text-sm font-bold text-emerald-400 mb-2">Kuota Energi Total (kWh)</label>
+                                        <input type="number" id="kuota_energi" class="w-full bg-gray-900 border border-gray-700 focus:border-emerald-500 focus:ring-emerald-500/20 py-2 px-4 rounded-lg transition" placeholder="100.0" step="0.1">
+                                    </div>
+                                    <div class="bg-red-900/10 p-4 rounded-xl border border-red-500/20">
+                                        <label class="block text-sm font-bold text-red-400 mb-2">Batas Kritis / Alert Trigger (kWh)</label>
+                                        <input type="number" id="batas_sisa_energi" class="w-full bg-gray-900 border border-red-900 focus:border-red-500 focus:ring-red-500/20 py-2 px-4 rounded-lg transition" placeholder="10.0" step="0.1">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-blue-300 bg-blue-900/20 border border-blue-800/50 p-3 rounded-lg flex items-start gap-3">
+                                    <i class="fa-solid fa-circle-info mt-1"></i>
+                                    <span>Pesan peringatan darurat akan otomatis ditembak ke Telegram Anda di saat:<br><b class="text-blue-200">SISA ENERGI (Kuota Total - Energi Terpakai) &le; Batas Kritis</b>.</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Sticky Action Bar -->
+                        <div class="glass p-4 rounded-2xl border border-gray-700/50 flex flex-col sm:flex-row justify-between items-center sm:sticky bottom-4 z-50">
+                            <div id="save-msg" class="hidden text-sm font-medium px-4 py-2 rounded-lg border w-full sm:w-auto mb-4 sm:mb-0 text-center sm:text-left transition-opacity"></div>
+                            
+                            <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-3 ml-auto">
+                                <i class="fa-solid fa-save text-lg"></i> SIMPAN PERUBAHAN
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        window.api.checkAuth();
+
+        const form = document.getElementById('settings-form');
+        const msg = document.getElementById('save-msg');
+
+        async function loadSettings() {
+            const data = await window.api.fetch('/settings');
+            if(!data.error) {
+                document.getElementById('tarif_per_kwh').value = data.tarif_per_kwh || '1444.70';
+                document.getElementById('telegram_bot_token').value = data.telegram_bot_token || '';
+                document.getElementById('telegram_chat_id').value = data.telegram_chat_id || '';
+                document.getElementById('kuota_energi').value = data.kuota_energi || '100.0';
+                document.getElementById('batas_sisa_energi').value = data.batas_sisa_energi || '10.0';
+                document.getElementById('telegram_active').checked = data.telegram_active === '1' || data.telegram_active === 'true';
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+            btn.disabled = true;
+
+            const payload = {
+                tarif_per_kwh: document.getElementById('tarif_per_kwh').value,
+                telegram_bot_token: document.getElementById('telegram_bot_token').value,
+                telegram_chat_id: document.getElementById('telegram_chat_id').value,
+                kuota_energi: document.getElementById('kuota_energi').value,
+                batas_sisa_energi: document.getElementById('batas_sisa_energi').value,
+                telegram_active: document.getElementById('telegram_active').checked ? '1' : '0'
+            };
+
+            const response = await window.api.fetch('/settings', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            msg.classList.remove('hidden', 'bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/50', 'bg-red-500/10', 'text-red-400', 'border-red-500/50');
+
+            if(!response.error) {
+                msg.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/50');
+                msg.textContent = "Pengaturan berhasil disimpan!";
+            } else {
+                msg.classList.add('bg-red-500/10', 'text-red-400', 'border-red-500/50');
+                msg.textContent = "Gagal menyimpan pengaturan.";
+            }
+
+            setTimeout(() => { msg.classList.add('hidden'); }, 3000);
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+</html>

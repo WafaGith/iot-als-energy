@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Data - Monitoring Listrik Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="antialiased text-gray-200">
+    
+    <div id="layout-wrapper">
+        <!-- Sidebar -->
+        <!-- Sidebar Container (Loads dynamically via JS) -->
+        <div id="sidebar-container" style="display: contents;"></div>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="flex items-center gap-4">
+                    <button class="mobile-toggle" id="sidebar-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold text-white">Data Historis Sensor</h2>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+                
+                <div class="glass p-5 rounded-2xl border border-gray-700/50">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <h3 class="text-xl font-bold text-gray-200">Riwayat Penggunaan Listrik</h3>
+                        <div class="flex gap-2">
+                            <button id="btn-refresh" class="btn-primary bg-gray-700 hover:bg-gray-600 !border-gray-600 bg-none flex gap-2 items-center text-sm">
+                                <i class="fa-solid fa-rotate-right"></i> Refresh
+                            </button>
+                            <button onclick="window.print()" class="btn-primary flex gap-2 items-center text-sm">
+                                <i class="fa-solid fa-file-export"></i> Ekspor / Print
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800/50 p-4 rounded border border-gray-700/50 mb-4 flex flex-wrap gap-4 items-end">
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="block text-xs text-gray-400 mb-1">Mulai Dari</label>
+                            <input type="date" id="filter_start" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                        </div>
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="block text-xs text-gray-400 mb-1">Sampai Dengan</label>
+                            <input type="date" id="filter_end" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                        </div>
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="block text-xs text-gray-400 mb-1">Target Mesin</label>
+                            <select id="filter_mesin" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition cursor-pointer">
+                                <option value="all">Semua Tipe</option>
+                                <option value="1">Mesin 1</option>
+                                <option value="2">Mesin 2</option>
+                            </select>
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <button id="btn-filter" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded text-sm transition font-medium shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-filter"></i> Terapkan Filter
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-gray-700/50">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Mesin</th>
+                                    <th>Tegangan (V)</th>
+                                    <th>Arus (A)</th>
+                                    <th>Daya (W)</th>
+                                    <th>Energi (kWh)</th>
+                                    <th>Frekuensi (Hz)</th>
+                                    <th>PF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center py-6 text-gray-500">Memuat data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script>
+        window.api.checkAuth();
+        
+        async function fetchHistory() {
+            const btn = document.getElementById('btn-refresh');
+            const btnFilter = document.getElementById('btn-filter');
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            if(btnFilter) btnFilter.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
+            
+            const startDate = document.getElementById('filter_start').value;
+            const endDate = document.getElementById('filter_end').value;
+            const mesinId = document.getElementById('filter_mesin').value;
+            
+            let query = '/history/sensor?limit=100';
+            if(startDate) query += `&start_date=${startDate}`;
+            if(endDate) query += `&end_date=${endDate}`;
+            if(mesinId && mesinId !== 'all') query += `&mesin_id=${mesinId}`;
+
+            const response = await window.api.fetch(query);
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            if(!response.error && response.length > 0) {
+                response.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="font-mono text-xs">${window.utils.formatDate(row.timestamp)}</td>
+                        <td><span class="px-2 py-1 bg-blue-500/10 text-blue-400 rounded text-xs border border-blue-500/20">Mesin ${row.mesin_id}</span></td>
+                        <td>${window.utils.formatNumber(row.volt)} V</td>
+                        <td>${window.utils.formatNumber(row.arus)} A</td>
+                        <td class="text-emerald-400 font-semibold">${window.utils.formatNumber(row.daya)} W</td>
+                        <td>${window.utils.formatNumber(row.energi, 3)} kWh</td>
+                        <td>${window.utils.formatNumber(row.frekuensi)} Hz</td>
+                        <td>${window.utils.formatNumber(row.pf, 2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-500">Data history kosong.</td></tr>';
+            }
+            
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Refresh';
+            const btnFilter = document.getElementById('btn-filter');
+            if(btnFilter) btnFilter.innerHTML = '<i class="fa-solid fa-filter"></i> Terapkan Filter';
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchHistory);
+        document.getElementById('btn-refresh').addEventListener('click', fetchHistory);
+        document.getElementById('btn-filter').addEventListener('click', fetchHistory);
+    </script>
+</body>
+</html>

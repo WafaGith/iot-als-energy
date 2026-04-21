@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring - Monitoring Listrik Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="antialiased text-gray-200">
+    
+    <div id="layout-wrapper">
+        <!-- Sidebar Container (Loads dynamically via JS) -->
+        <div id="sidebar-container" style="display: contents;"></div>
+
+        <main id="main-content">
+            <header class="topbar">
+                <div class="flex items-center gap-4">
+                    <button class="mobile-toggle" id="sidebar-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold text-white">Monitoring Parameter Listrik</h2>
+                </div>
+                <div>
+                    <select id="mesin-selector" class="bg-gray-800 text-white border-gray-600 rounded">
+                        <option value="m1">Mesin 1</option>
+                        <option value="m2">Mesin 2</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                    <!-- Cards parameter -->
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                        <p class="text-xs text-gray-400 mb-1">Tegangan (Volt)</p>
+                        <h4 class="text-2xl font-bold text-yellow-400" id="val_v">0</h4>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                        <p class="text-xs text-gray-400 mb-1">Arus (Ampere)</p>
+                        <h4 class="text-2xl font-bold text-blue-400" id="val_i">0</h4>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                        <p class="text-xs text-gray-400 mb-1">Daya Aktif (Watt)</p>
+                        <h4 class="text-2xl font-bold text-emerald-400" id="val_p">0</h4>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                        <p class="text-xs text-gray-400 mb-1">Frekuensi (Hz)</p>
+                        <h4 class="text-2xl font-bold text-purple-400" id="val_f">0</h4>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                        <p class="text-xs text-gray-400 mb-1">Power Factor (PF)</p>
+                        <h4 class="text-2xl font-bold text-pink-400" id="val_pf">0</h4>
+                    </div>
+                </div>
+
+                <div class="glass p-5 rounded-2xl border border-gray-700/50 relative">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-200">Grafik Parameter Realtime</h3>
+                        <p class="text-sm text-gray-400">Update terpusat: <span id="last_sync">-</span></p>
+                    </div>
+                    <div class="h-[400px] w-full relative">
+                        <canvas id="monitoringChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.api.checkAuth();
+        
+        let chartInstance = null;
+
+        function initChart() {
+            const ctx = document.getElementById('monitoringChart').getContext('2d');
+            Chart.defaults.color = '#9ca3af';
+            Chart.defaults.font.family = "'Inter', sans-serif";
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Tegangan (V)', borderColor: '#facc15', backgroundColor: 'rgba(250, 204, 21, 0.1)', data: [], tension: 0.4, yAxisID: 'y' },
+                        { label: 'Arus (A)', borderColor: '#60a5fa', backgroundColor: 'rgba(96, 165, 250, 0.1)', data: [], tension: 0.4, yAxisID: 'y1' },
+                        { label: 'Daya (W)', borderColor: '#34d399', backgroundColor: 'rgba(52, 211, 153, 0.1)', data: [], tension: 0.4, yAxisID: 'y' },
+                        { label: 'Frekuensi (Hz)', borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.1)', data: [], tension: 0.4, yAxisID: 'y2', hidden: true },
+                        { label: 'Power Factor', borderColor: '#f472b6', backgroundColor: 'rgba(244, 114, 182, 0.1)', data: [], tension: 0.4, yAxisID: 'y3', hidden: true }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+                        tooltip: { backgroundColor: 'rgba(17, 24, 39, 0.9)', titleColor: '#fff', bodyColor: '#cbd5e1', padding: 10, borderColor: 'rgba(56, 189, 248, 0.3)', borderWidth: 1 }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(71, 85, 105, 0.2)' } },
+                        y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(71, 85, 105, 0.2)' } },
+                        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } },
+                        y2: { type: 'linear', display: false, position: 'right' },
+                        y3: { type: 'linear', display: false, position: 'right' }
+                    }
+                }
+            });
+        }
+
+        async function fetchRealtime() {
+            const response = await window.api.fetch('/realtime');
+            if(!response.error) {
+                const selected = document.getElementById('mesin-selector').value;
+                let data = response[selected] || {};
+                let historyData = response['history_' + selected] || [];
+
+                // Cek Staleness / Offline
+                let isStale = false;
+                if(data.timestamp) {
+                    const tString = data.timestamp.replace(' ', 'T');
+                    const lastDate = new Date(tString);
+                    const diffSec = (new Date() - lastDate) / 1000;
+                    if(diffSec > 15) {
+                        isStale = true;
+                    }
+                } else {
+                    isStale = true;
+                }
+
+                if(isStale) {
+                    // Jika mati, paksa jadi 0
+                    data.volt = 0; data.arus = 0; data.daya = 0; data.frekuensi = 0; data.pf = 0;
+                }
+
+                document.getElementById('val_v').innerText = window.utils.formatNumber(data.volt);
+                document.getElementById('val_i').innerText = window.utils.formatNumber(data.arus);
+                document.getElementById('val_p').innerText = window.utils.formatNumber(data.daya);
+                document.getElementById('val_f').innerText = window.utils.formatNumber(data.frekuensi);
+                document.getElementById('val_pf').innerText = window.utils.formatNumber(data.pf, 2);
+
+                if(data.timestamp) {
+                    document.getElementById('last_sync').innerHTML = window.utils.formatTimeOnly(data.timestamp) + (isStale ? ' <span class="text-red-500 font-bold ml-1">(OFFLINE)</span>' : ' <span class="text-emerald-400 font-bold ml-1">(ONLINE)</span>');
+                }
+                
+                // Update Graphic
+                if(chartInstance && historyData.length > 0) {
+                    chartInstance.data.labels = historyData.map(d => d.timestamp);
+                    chartInstance.data.datasets[0].data = historyData.map(d => isStale ? 0 : d.volt);
+                    chartInstance.data.datasets[1].data = historyData.map(d => isStale ? 0 : d.arus);
+                    chartInstance.data.datasets[2].data = historyData.map(d => isStale ? 0 : d.daya);
+                    chartInstance.data.datasets[3].data = historyData.map(d => isStale ? 0 : d.frekuensi);
+                    chartInstance.data.datasets[4].data = historyData.map(d => isStale ? 0 : d.pf);
+                    chartInstance.update('none'); // Update without full animation to avoid flicker
+                }
+            }
+        }
+
+        document.getElementById('mesin-selector').addEventListener('change', () => {
+            fetchRealtime(); // Immediate fetch on swtich
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            fetchRealtime();
+            setInterval(fetchRealtime, 3000); // 3 seconds interval
+        });
+    </script>
+</body>
+</html>

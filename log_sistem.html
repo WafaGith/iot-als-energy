@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Sistem - Monitoring Listrik Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="antialiased text-gray-200">
+    
+    <div id="layout-wrapper">
+        <!-- Sidebar Container (Loads dynamically via JS) -->
+        <div id="sidebar-container" style="display: contents;"></div>
+
+        <main id="main-content">
+            <header class="topbar">
+                <div class="flex items-center gap-4">
+                    <button class="mobile-toggle" id="sidebar-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold text-white">Catatan Event Sistem</h2>
+                </div>
+            </header>
+
+            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+                <div class="glass p-5 rounded-2xl border border-gray-700/50">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-200">Log Kejadian (Event)</h3>
+                        <button id="btn-refresh" class="btn-primary text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-gray-700/50">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr>
+                                    <th width="20%">Waktu</th>
+                                    <th width="30%">Jenis Event</th>
+                                    <th width="50%">Deskripsi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr>
+                                    <td colspan="3" class="text-center py-6 text-gray-500">Memuat log...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script>
+        window.api.checkAuth();
+        
+        async function fetchEvents() {
+            const btn = document.getElementById('btn-refresh');
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            
+            const response = await window.api.fetch('/history/events?limit=50');
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            if(!response.error && response.length > 0) {
+                response.forEach(row => {
+                    let badgeClass = 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+                    if(row.event_type.toLowerCase().includes('login')) badgeClass = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+                    if(row.event_type.toLowerCase().includes('setting')) badgeClass = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+                    if(row.event_type.toLowerCase().includes('error')) badgeClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="font-mono text-xs">${window.utils.formatDate(row.timestamp)}</td>
+                        <td><span class="px-2 py-1 rounded text-xs border ${badgeClass}">${row.event_type || 'System Info'}</span></td>
+                        <td class="text-gray-300 text-sm whitespace-pre-line">${row.description}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-500">Tidak ada log sistem yang tercatat.</td></tr>';
+            }
+            
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Refresh';
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchEvents);
+        document.getElementById('btn-refresh').addEventListener('click', fetchEvents);
+    </script>
+</body>
+</html>
