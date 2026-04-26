@@ -3,7 +3,7 @@ from mysql.connector import Error
 import json
 import os
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'settings.json')
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'config', 'settings.json')
 
 def get_config():
     with open(CONFIG_PATH, 'r') as f:

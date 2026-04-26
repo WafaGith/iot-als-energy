@@ -23,8 +23,9 @@
                     </button>
                     <h2 class="text-lg font-semibold text-white">Monitoring Parameter Listrik</h2>
                 </div>
-                <div>
-                    <select id="mesin-selector" class="bg-gray-800 text-white border-gray-600 rounded">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400 font-medium hidden sm:inline">Pilih Mesin:</span>
+                    <select id="mesin-selector" class="w-24 rounded px-2 py-1 ">
                         <option value="m1">Mesin 1</option>
                         <option value="m2">Mesin 2</option>
                     </select>
@@ -34,24 +35,40 @@
             <div class="p-4 sm:p-6 lg:p-8 flex-1">
                 
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-                    <!-- Cards parameter -->
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
-                        <p class="text-xs text-gray-400 mb-1">Tegangan (Volt)</p>
-                        <h4 class="text-2xl font-bold text-yellow-400" id="val_v">0</h4>
+                    <!-- Gauge Cards -->
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
+                        <p class="text-xs text-gray-400 mb-2 font-medium">Tegangan (Volt)</p>
+                        <div class="w-full max-w-[140px] relative aspect-[2/1]">
+                            <canvas id="gauge_v"></canvas>
+                            <div class="absolute bottom-0 left-0 w-full text-center pb-1">
+                                <h4 class="text-2xl font-bold text-yellow-400 leading-none" id="val_v">0</h4>
+                            </div>
+                        </div>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
-                        <p class="text-xs text-gray-400 mb-1">Arus (Ampere)</p>
-                        <h4 class="text-2xl font-bold text-blue-400" id="val_i">0</h4>
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
+                        <p class="text-xs text-gray-400 mb-2 font-medium">Arus (Ampere)</p>
+                        <div class="w-full max-w-[140px] relative aspect-[2/1]">
+                            <canvas id="gauge_i"></canvas>
+                            <div class="absolute bottom-0 left-0 w-full text-center pb-1">
+                                <h4 class="text-2xl font-bold text-blue-400 leading-none" id="val_i">0</h4>
+                            </div>
+                        </div>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
-                        <p class="text-xs text-gray-400 mb-1">Daya Aktif (Watt)</p>
-                        <h4 class="text-2xl font-bold text-emerald-400" id="val_p">0</h4>
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
+                        <p class="text-xs text-gray-400 mb-2 font-medium">Daya Aktif (Watt)</p>
+                        <div class="w-full max-w-[140px] relative aspect-[2/1]">
+                            <canvas id="gauge_p"></canvas>
+                            <div class="absolute bottom-0 left-0 w-full text-center pb-1">
+                                <h4 class="text-2xl font-bold text-emerald-400 leading-none" id="val_p">0</h4>
+                            </div>
+                        </div>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                    <!-- Standard Cards -->
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
                         <p class="text-xs text-gray-400 mb-1">Frekuensi (Hz)</p>
                         <h4 class="text-2xl font-bold text-purple-400" id="val_f">0</h4>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center">
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
                         <p class="text-xs text-gray-400 mb-1">Power Factor (PF)</p>
                         <h4 class="text-2xl font-bold text-pink-400" id="val_pf">0</h4>
                     </div>
@@ -79,6 +96,32 @@
         window.api.checkAuth();
         
         let chartInstance = null;
+        let gaugeV = null;
+        let gaugeI = null;
+        let gaugeP = null;
+
+        function createGauge(ctx, color, maxVal) {
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Value', 'Empty'],
+                    datasets: [{
+                        data: [0, maxVal],
+                        backgroundColor: [color, 'rgba(55, 65, 81, 0.5)'],
+                        borderWidth: 0,
+                        cutout: '80%',
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    animation: { duration: 800, easing: 'easeOutQuart' }
+                }
+            });
+        }
 
         function initChart() {
             const ctx = document.getElementById('monitoringChart').getContext('2d');
@@ -114,6 +157,11 @@
                     }
                 }
             });
+            
+            // Init Gauges
+            gaugeV = createGauge(document.getElementById('gauge_v').getContext('2d'), '#facc15', 250);
+            gaugeI = createGauge(document.getElementById('gauge_i').getContext('2d'), '#60a5fa', 10);
+            gaugeP = createGauge(document.getElementById('gauge_p').getContext('2d'), '#34d399', 2500);
         }
 
         async function fetchRealtime() {
@@ -141,11 +189,29 @@
                     data.volt = 0; data.arus = 0; data.daya = 0; data.frekuensi = 0; data.pf = 0;
                 }
 
+                // Update text
                 document.getElementById('val_v').innerText = window.utils.formatNumber(data.volt);
                 document.getElementById('val_i').innerText = window.utils.formatNumber(data.arus);
                 document.getElementById('val_p').innerText = window.utils.formatNumber(data.daya);
                 document.getElementById('val_f').innerText = window.utils.formatNumber(data.frekuensi);
                 document.getElementById('val_pf').innerText = window.utils.formatNumber(data.pf, 2);
+                
+                // Update Gauges
+                if(gaugeV) {
+                    let v = parseFloat(data.volt) || 0;
+                    gaugeV.data.datasets[0].data = [v, Math.max(0, 250 - v)];
+                    gaugeV.update('none');
+                }
+                if(gaugeI) {
+                    let i = parseFloat(data.arus) || 0;
+                    gaugeI.data.datasets[0].data = [i, Math.max(0, 10 - i)];
+                    gaugeI.update('none');
+                }
+                if(gaugeP) {
+                    let p = parseFloat(data.daya) || 0;
+                    gaugeP.data.datasets[0].data = [p, Math.max(0, 2500 - p)];
+                    gaugeP.update('none');
+                }
 
                 if(data.timestamp) {
                     document.getElementById('last_sync').innerHTML = window.utils.formatTimeOnly(data.timestamp) + (isStale ? ' <span class="text-red-500 font-bold ml-1">(OFFLINE)</span>' : ' <span class="text-emerald-400 font-bold ml-1">(ONLINE)</span>');

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Data - Monitoring Listrik Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="antialiased text-gray-200">
+
+    <div id="layout-wrapper">
+        <!-- Sidebar -->
+        <!-- Sidebar Container (Loads dynamically via JS) -->
+        <div id="sidebar-container" style="display: contents;"></div>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="flex items-center gap-4">
+                    <button class="mobile-toggle" id="sidebar-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold text-white">Data Historis Sensor</h2>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+
+                <div class="glass p-5 rounded-2xl border border-gray-700/50">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-5 gap-4">
+                        <h3 class="text-xl font-bold text-gray-200">Riwayat Penggunaan Listrik</h3>
+                        <div class="flex gap-2">
+                            <button id="btn-refresh" class="btn-secondary">
+                                <i class="fa-solid fa-rotate-right"></i> Refresh
+                            </button>
+                            <button onclick="window.print()" class="btn-secondary">
+                                <i class="fa-solid fa-file-export"></i> Ekspor
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label>Mulai Dari</label>
+                            <input type="date" id="filter_start">
+                        </div>
+                        <div class="filter-group">
+                            <label>Sampai Dengan</label>
+                            <input type="date" id="filter_end">
+                        </div>
+                        <div class="filter-group" style="max-width: 180px;">
+                            <label>Target Mesin</label>
+                            <select id="filter_mesin">
+                                <option value="all">Semua Mesin</option>
+                                <option value="1">Mesin 1 (Jahit)</option>
+                                <option value="2">Mesin 2 (Obras)</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button id="btn-filter" class="btn-filter">
+                                <i class="fa-solid fa-filter"></i> Terapkan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-gray-700/50">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Mesin</th>
+                                    <th>Tegangan (V)</th>
+                                    <th>Arus (A)</th>
+                                    <th>Daya (W)</th>
+                                    <th>Energi (kWh)</th>
+                                    <th>Frekuensi (Hz)</th>
+                                    <th>PF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center py-6 text-gray-500">Memuat data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination-bar">
+                        <div class="pagination-controls">
+                            <button id="btn-prev"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+                            <span id="page-info" class="pagination-info">Hal 1 dari 1</span>
+                            <button id="btn-next">Next <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="pagination-limit">
+                            <label>Tampilkan:</label>
+                            <select id="filter_limit">
+                                <option value="10">10</option>
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script>
+        window.api.checkAuth();
+
+        let currentPage = 1;
+        let totalPages = 1;
+
+        async function fetchHistory() {
+            const btn = document.getElementById('btn-refresh');
+            const btnFilterBtn = document.getElementById('btn-filter');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            if (btnFilterBtn) btnFilterBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
+
+            const startDate = document.getElementById('filter_start').value;
+            const endDate = document.getElementById('filter_end').value;
+            const mesinId = document.getElementById('filter_mesin').value;
+            const limit = document.getElementById('filter_limit') ? document.getElementById('filter_limit').value : 20;
+
+            let query = `/history/sensor?limit=${limit}&page=${currentPage}`;
+            if (startDate) query += `&start_date=${startDate}`;
+            if (endDate) query += `&end_date=${endDate}`;
+            if (mesinId && mesinId !== 'all') query += `&mesin_id=${mesinId}`;
+
+            const response = await window.api.fetch(query);
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (!response.error && response.data && response.data.length > 0) {
+                response.data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="font-mono text-xs">${window.utils.formatDate(row.timestamp)}</td>
+                        <td><span class="px-2 py-1 bg-blue-500/10 text-blue-400 rounded text-xs border border-blue-500/20">Mesin ${row.mesin_id}</span></td>
+                        <td>${window.utils.formatNumber(row.volt)} V</td>
+                        <td>${window.utils.formatNumber(row.arus)} A</td>
+                        <td class="text-emerald-400 font-semibold">${window.utils.formatNumber(row.daya)} W</td>
+                        <td>${window.utils.formatNumber(row.energi, 3)} kWh</td>
+                        <td>${window.utils.formatNumber(row.frekuensi)} Hz</td>
+                        <td>${window.utils.formatNumber(row.pf, 2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                totalPages = response.total_pages || 1;
+                document.getElementById('page-info').innerText = `Hal ${currentPage} dari ${totalPages}`;
+                
+                document.getElementById('btn-prev').disabled = currentPage <= 1;
+                document.getElementById('btn-next').disabled = currentPage >= totalPages;
+            } else {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-500">Data history kosong.</td></tr>';
+                document.getElementById('page-info').innerText = `Hal 1 dari 1`;
+                document.getElementById('btn-prev').disabled = true;
+                document.getElementById('btn-next').disabled = true;
+            }
+
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Refresh';
+            if (btnFilterBtn) btnFilterBtn.innerHTML = '<i class="fa-solid fa-filter"></i> Terapkan Filter';
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchHistory);
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            fetchHistory(); // Keep current page
+        });
+        document.getElementById('btn-filter').addEventListener('click', () => {
+            currentPage = 1; // Reset to page 1 on new filter
+            fetchHistory();
+        });
+        
+        const limitDropdown = document.getElementById('filter_limit');
+        if(limitDropdown) {
+            limitDropdown.addEventListener('change', () => {
+                currentPage = 1; // Reset to page 1 on limit change
+                fetchHistory();
+            });
+        }
+        
+        const btnPrev = document.getElementById('btn-prev');
+        if(btnPrev) {
+            btnPrev.addEventListener('click', () => {
+                if(currentPage > 1) {
+                    currentPage--;
+                    fetchHistory();
+                }
+            });
+        }
+        
+        const btnNext = document.getElementById('btn-next');
+        if(btnNext) {
+            btnNext.addEventListener('click', () => {
+                if(currentPage < totalPages) {
+                    currentPage++;
+                    fetchHistory();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
