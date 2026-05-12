@@ -40,8 +40,8 @@
                             <button id="btn-refresh" class="btn-secondary">
                                 <i class="fa-solid fa-rotate-right"></i> Refresh
                             </button>
-                            <button onclick="window.print()" class="btn-secondary">
-                                <i class="fa-solid fa-file-export"></i> Ekspor
+                            <button id="btn-export" class="btn-secondary">
+                                <i class="fa-solid fa-file-excel text-green-500"></i> Ekspor Excel
                             </button>
                         </div>
                     </div>
@@ -58,8 +58,8 @@
                             <label>Target Mesin</label>
                             <select id="filter_mesin">
                                 <option value="all">Semua Mesin</option>
-                                <option value="1">Mesin 1 (Jahit)</option>
-                                <option value="2">Mesin 2 (Obras)</option>
+                                <option value="1">Mesin 1</option>
+                                <option value="2">Mesin 2</option>
                             </select>
                         </div>
                         <div class="filter-actions">
@@ -117,6 +117,7 @@
     <script src="assets/js/api.js"></script>
     <script src="assets/js/sidebar.js"></script>
     <script src="assets/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script>
         window.api.checkAuth();
 
@@ -211,6 +212,56 @@
                 }
             });
         }
+
+        document.getElementById('btn-export').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-export');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengekspor...';
+            btn.disabled = true;
+
+            const startDate = document.getElementById('filter_start').value;
+            const endDate = document.getElementById('filter_end').value;
+            const mesinId = document.getElementById('filter_mesin').value;
+            
+            // Ambil semua data (limit besar) untuk diekspor sesuai filter
+            let query = `/history/sensor?limit=100000&page=1`;
+            if (startDate) query += `&start_date=${startDate}`;
+            if (endDate) query += `&end_date=${endDate}`;
+            if (mesinId && mesinId !== 'all') query += `&mesin_id=${mesinId}`;
+
+            try {
+                const response = await window.api.fetch(query);
+                if (!response.error && response.data && response.data.length > 0) {
+                    // Format data untuk Excel
+                    const dataForExcel = response.data.map(row => ({
+                        'Waktu': window.utils.formatDate(row.timestamp),
+                        'Mesin': 'Mesin ' + row.mesin_id,
+                        'Tegangan (V)': row.volt,
+                        'Arus (A)': row.arus,
+                        'Daya (W)': row.daya,
+                        'Energi (kWh)': row.energi,
+                        'Frekuensi (Hz)': row.frekuensi,
+                        'Power Factor': row.pf
+                    }));
+
+                    // Buat Worksheet & Workbook
+                    const ws = XLSX.utils.json_to_sheet(dataForExcel);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Riwayat Data");
+                    
+                    // Simpan sebagai file .xlsx
+                    XLSX.writeFile(wb, "Riwayat_Data_Monitoring.xlsx");
+                } else {
+                    alert('Tidak ada data untuk diekspor pada filter ini.');
+                }
+            } catch (error) {
+                alert('Gagal mengekspor data.');
+                console.error(error);
+            }
+
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        });
     </script>
 </body>
 

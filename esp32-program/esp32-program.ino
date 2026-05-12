@@ -6,9 +6,9 @@
 #include <HTTPClient.h>
 
 // ================= WIFI CONFIG =================
-const char* ssid = "AR NANI 2.4G";
-const char* password = "AYAMlaos";
-const char* serverName = "http://192.168.1.32:5000/api/sensor/data"; // UBAH KE IP PC ANDA
+const char* ssid = "Wifi kita";
+const char* password = "wifikita123";
+const char* serverName = "http://192.168.1.46:5000/api/sensor/data"; // UBAH KE IP PC ANDA
 
 // ================= LCD =================
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -92,8 +92,8 @@ void loop() {
   unsigned long nowMillis = millis();
   DateTime now = rtc.now();
 
-  // ===== BACA SENSOR & KIRIM HTTP (Kirim tiap 3 detik demi efisiensi) =====
-  if(nowMillis - lastRead >= 3000){
+  // ===== BACA SENSOR & KIRIM HTTP (Kirim tiap 1 menit) =====
+  if(nowMillis - lastRead >= 60000){
     lastRead = nowMillis;
 
     v1 = safe(pzem1.voltage());

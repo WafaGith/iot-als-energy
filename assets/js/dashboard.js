@@ -69,13 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let m2 = response.m2 || {};
 
             // 1. Cek Timeout (Offline / Staleness Check)
-            // Default assumes hardware is sending every ~3s. If >15s, it is dead.
+            // Menggunakan 75 detik karena hardware mengirim tiap 1 menit.
             let isStale = false;
             if (m1.timestamp) {
                 const tString = m1.timestamp.replace(' ', 'T');
                 const lastDate = new Date(tString);
                 const diffSec = (new Date() - lastDate) / 1000;
-                if (diffSec > 15) {
+                if (diffSec > 75) {
                     isStale = true;
                 }
             } else {

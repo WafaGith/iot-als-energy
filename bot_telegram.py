@@ -102,7 +102,46 @@ def handle_command(command, token, chat_id, cfg):
         total_e = (m1['energi'] if m1 else 0) + (m2['energi'] if m2 else 0)
         send_message(token, chat_id, f"📈 <b>LAPORAN (24 Jam Terakhir)</b>\n\nTotal Energi Akumulasi: {total_e:.2f} kWh\nRata-rata Penarikan Daya: {avg_p:.2f} Watt\n")
 
+import threading
+
+def offline_monitor_loop():
+    print("[OFFLINE MONITOR] Thread berjalan...")
+    while True:
+        try:
+            cfg = get_settings()
+            if cfg.get('telegram_active', '0') == '1':
+                latest = execute_query("SELECT timestamp FROM sensor_data ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+                if latest and latest['timestamp']:
+                    diffSec = (datetime.now() - latest['timestamp']).total_seconds()
+                    if diffSec > 75:
+                        print(f"[OFFLINE MONITOR] Terdeteksi offline! Selisih waktu: {diffSec} detik")
+                        
+                        # Cek apakah notifikasi terakhir yang dikirim sudah berupa peringatan offline
+                        last_notif = execute_query("SELECT message FROM notifications ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+                        
+                        send_it = True
+                        if last_notif and "Sistem monitoring offline" in last_notif['message']:
+                            send_it = False
+                            print("[OFFLINE MONITOR] Skip kirim notif karena status terakhir sudah offline")
+                        
+                        if send_it:
+                            print("[OFFLINE MONITOR] Mengirim notifikasi telegram!")
+                            msg_text = "⚠️ <b>PERINGATAN SISTEM OFFLINE</b> ⚠️\n\nSistem monitoring offline atau terindikasi terjadi pemadaman listrik (tidak ada data diterima selama >1 menit)."
+                            token = cfg.get('telegram_bot_token', '').strip()
+                            chat_id = cfg.get('telegram_chat_id', '').strip()
+                            if token and chat_id:
+                                send_message(token, chat_id, msg_text)
+                                execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, "SUCCESS"), commit=True)
+                                print("[OFFLINE MONITOR] Notifikasi berhasil dikirim.")
+                            else:
+                                print("[OFFLINE MONITOR] Token atau Chat ID belum diatur!")
+        except Exception as e:
+            print("[OFFLINE MONITOR] ERROR:", e)
+        time.sleep(5)
+
 def start_polling():
+    threading.Thread(target=offline_monitor_loop, daemon=True).start()
+    
     offset = 0
     print("Mulai mendengar Pesan Telegram masuk...")
     while True:

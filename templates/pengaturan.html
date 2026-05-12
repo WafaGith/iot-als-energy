@@ -97,6 +97,36 @@
                                     <span>Pesan peringatan darurat akan otomatis ditembak ke Telegram Anda di saat:<br><b class="text-blue-200">SISA ENERGI (Kuota Total - Energi Terpakai) &le; Batas Kritis</b>.</span>
                                 </p>
                             </div>
+                        <!-- Panel 3: Notifikasi Tambahan -->
+                        <div class="glass p-6 sm:p-8 rounded-2xl border border-gray-700/50 relative overflow-hidden mb-6 group hover:border-orange-500/30 transition">
+                            <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 group-hover:opacity-20 transition"></div>
+                            
+                            <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-700/50">
+                                <span class="p-3 bg-orange-500/10 text-orange-400 rounded-xl"><i class="fa-solid fa-bell text-2xl"></i></span>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-200">Notifikasi Operasional & Harian</h3>
+                                    <p class="text-sm text-gray-400">Pengaturan peringatan jam kerja dan batas kWh.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-5">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div class="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Jam Kerja Mulai</label>
+                                        <input type="time" id="jam_kerja_mulai" class="w-full bg-gray-900 border border-gray-700 focus:border-orange-500 focus:ring-orange-500/20 py-2.5 px-4 rounded-xl transition">
+                                    </div>
+                                    <div class="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Jam Kerja Selesai</label>
+                                        <input type="time" id="jam_kerja_selesai" class="w-full bg-gray-900 border border-gray-700 focus:border-orange-500 focus:ring-orange-500/20 py-2.5 px-4 rounded-xl transition">
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                    <label class="block text-sm font-bold text-yellow-400 mb-2">Batas Penggunaan Harian (kWh)</label>
+                                    <input type="number" id="batas_harian_kwh" class="w-full bg-gray-900 border border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500/20 py-2 px-4 rounded-lg transition" placeholder="Contoh: 50" step="0.1">
+                                    <p class="text-xs text-gray-400 mt-2">Peringatan akan dikirim jika total penggunaan energi dalam 1 hari melebihi batas ini.</p>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Sticky Action Bar -->
@@ -132,6 +162,9 @@
                 document.getElementById('kuota_energi').value = data.kuota_energi || '100.0';
                 document.getElementById('batas_sisa_energi').value = data.batas_sisa_energi || '10.0';
                 document.getElementById('telegram_active').checked = data.telegram_active === '1' || data.telegram_active === 'true';
+                document.getElementById('jam_kerja_mulai').value = data.jam_kerja_mulai || '';
+                document.getElementById('jam_kerja_selesai').value = data.jam_kerja_selesai || '';
+                document.getElementById('batas_harian_kwh').value = data.batas_harian_kwh || '';
             }
         }
 
@@ -149,7 +182,10 @@
                 telegram_chat_id: document.getElementById('telegram_chat_id').value,
                 kuota_energi: document.getElementById('kuota_energi').value,
                 batas_sisa_energi: document.getElementById('batas_sisa_energi').value,
-                telegram_active: document.getElementById('telegram_active').checked ? '1' : '0'
+                telegram_active: document.getElementById('telegram_active').checked ? '1' : '0',
+                jam_kerja_mulai: document.getElementById('jam_kerja_mulai').value,
+                jam_kerja_selesai: document.getElementById('jam_kerja_selesai').value,
+                batas_harian_kwh: document.getElementById('batas_harian_kwh').value
             };
 
             const response = await window.api.fetch('/settings', {

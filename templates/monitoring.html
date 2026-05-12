@@ -177,7 +177,7 @@
                     const tString = data.timestamp.replace(' ', 'T');
                     const lastDate = new Date(tString);
                     const diffSec = (new Date() - lastDate) / 1000;
-                    if(diffSec > 15) {
+                    if(diffSec > 75) {
                         isStale = true;
                     }
                 } else {
