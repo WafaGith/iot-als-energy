@@ -38,6 +38,7 @@ float v2,i2,p2,e2,f2,pf2;
 unsigned long lastRead = 0;
 unsigned long lastLCD  = 0;
 unsigned long lastMode = 0;
+unsigned long lastSave = 0;
 
 int mode = 0;
 
@@ -92,8 +93,8 @@ void loop() {
   unsigned long nowMillis = millis();
   DateTime now = rtc.now();
 
-  // ===== BACA SENSOR & KIRIM HTTP (Kirim tiap 1 menit) =====
-  if(nowMillis - lastRead >= 60000){
+  // ===== BACA SENSOR & KIRIM HTTP (Kirim tiap 3 detik) =====
+  if(nowMillis - lastRead >= 3000){
     lastRead = nowMillis;
 
     v1 = safe(pzem1.voltage());
@@ -116,6 +117,13 @@ void loop() {
 
     float totalPower  = p1 + p2;
     float totalEnergy = e1 + e2;
+
+    // Logika simpan database tiap 1 menit
+    bool shouldSave = false;
+    if (nowMillis - lastSave >= 60000 || lastSave == 0) {
+      lastSave = nowMillis;
+      shouldSave = true;
+    }
 
     // ===== SERIAL MONITOR =====
     Serial.println("\n==============================================");
@@ -142,7 +150,7 @@ void loop() {
       (p1 > 0 ? "ON" : "OFF"),
       (p2 > 0 ? "ON" : "OFF"));
     
-    // ===== HTTP POST KE SERVER LAOKAL Flask =====
+    // ===== HTTP POST KE SERVER LOKAL Flask =====
     if(WiFi.status() == WL_CONNECTED){
       HTTPClient http;
       http.begin(serverName);
@@ -153,7 +161,8 @@ void loop() {
                             ",\"e\":" + String(e1) + ",\"f\":" + String(f1) + ",\"pf\":" + String(pf1) + "}," +
                             "\"m2\": {" + 
                             "\"v\":" + String(v2) + ",\"i\":" + String(i2) + ",\"p\":" + String(p2) + 
-                            ",\"e\":" + String(e2) + ",\"f\":" + String(f2) + ",\"pf\":" + String(pf2) + "}}";
+                            ",\"e\":" + String(e2) + ",\"f\":" + String(f2) + ",\"pf\":" + String(pf2) + "}," +
+                            "\"save\":" + (shouldSave ? "true" : "false") + "}";
                             
       int httpResponseCode = http.POST(jsonPayload);
       Serial.print("HTTP POST => => Response code: ");

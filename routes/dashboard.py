@@ -7,21 +7,77 @@ dashboard_bp = Blueprint('dashboard_bp', __name__)
 @dashboard_bp.route('/realtime', methods=['GET'])
 @token_required
 def get_realtime(current_user):
-    m1 = execute_query("SELECT * FROM sensor_data WHERE mesin_id = 1 ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
-    m2 = execute_query("SELECT * FROM sensor_data WHERE mesin_id = 2 ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+    from database import latest_sensor_data, sensor_history
     
-    history_m1 = execute_query("SELECT timestamp, volt, arus, daya, frekuensi, pf FROM (SELECT * FROM sensor_data WHERE mesin_id = 1 ORDER BY timestamp DESC LIMIT 15) sub ORDER BY timestamp ASC", fetch_all=True)
-    history_m2 = execute_query("SELECT timestamp, volt, arus, daya, frekuensi, pf FROM (SELECT * FROM sensor_data WHERE mesin_id = 2 ORDER BY timestamp DESC LIMIT 15) sub ORDER BY timestamp ASC", fetch_all=True)
+    # Ambil nilai terkini dari cache in-memory
+    m1 = latest_sensor_data.get("m1")
+    m2 = latest_sensor_data.get("m2")
     
-    for row in history_m1: row['timestamp'] = row['timestamp'].strftime("%H:%M:%S")
-    for row in history_m2: row['timestamp'] = row['timestamp'].strftime("%H:%M:%S")
-    if m1: m1['timestamp'] = m1['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
-    if m2: m2['timestamp'] = m2['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
-    
+    # Fallback ke DB jika cache masih kosong (server baru nyala)
+    if not m1:
+        m1 = execute_query("SELECT * FROM sensor_data WHERE mesin_id = 1 ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+        if m1 and hasattr(m1['timestamp'], 'strftime'):
+            m1['timestamp'] = m1['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        m1 = dict(m1)
+
+    if not m2:
+        m2 = execute_query("SELECT * FROM sensor_data WHERE mesin_id = 2 ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+        if m2 and hasattr(m2['timestamp'], 'strftime'):
+            m2['timestamp'] = m2['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        m2 = dict(m2)
+
+    # Ambil history grafik dari in-memory rolling buffer (update setiap 3 detik)
+    history_m1 = list(sensor_history['m1'])
+    history_m2 = list(sensor_history['m2'])
+
+    # Fallback ke DB jika history in-memory masih kosong (server baru nyala)
+    if not history_m1:
+        db_hist = execute_query(
+            "SELECT timestamp, volt, arus, daya, frekuensi, pf FROM "
+            "(SELECT * FROM sensor_data WHERE mesin_id = 1 ORDER BY timestamp DESC LIMIT 15) sub "
+            "ORDER BY timestamp ASC",
+            fetch_all=True
+        )
+        if db_hist:
+            for row in db_hist:
+                if hasattr(row['timestamp'], 'strftime'):
+                    row['timestamp'] = row['timestamp'].strftime("%H:%M:%S")
+            history_m1 = db_hist
+
+    if not history_m2:
+        db_hist = execute_query(
+            "SELECT timestamp, volt, arus, daya, frekuensi, pf FROM "
+            "(SELECT * FROM sensor_data WHERE mesin_id = 2 ORDER BY timestamp DESC LIMIT 15) sub "
+            "ORDER BY timestamp ASC",
+            fetch_all=True
+        )
+        if db_hist:
+            for row in db_hist:
+                if hasattr(row['timestamp'], 'strftime'):
+                    row['timestamp'] = row['timestamp'].strftime("%H:%M:%S")
+            history_m2 = db_hist
+
+    # =====================================================================
+    # Total Energi dari Database (nilai kumulatif MAX per mesin)
+    # Karena PZEM mencatat energi secara kumulatif (terus naik),
+    # nilai MAX(energi) = total kWh keseluruhan yang pernah terpakai
+    # =====================================================================
+    db_e1 = execute_query("SELECT MAX(energi) as total FROM sensor_data WHERE mesin_id = 1", fetch_one=True)
+    db_e2 = execute_query("SELECT MAX(energi) as total FROM sensor_data WHERE mesin_id = 2", fetch_one=True)
+    total_energi_m1_db = float(db_e1['total']) if db_e1 and db_e1['total'] is not None else 0.0
+    total_energi_m2_db = float(db_e2['total']) if db_e2 and db_e2['total'] is not None else 0.0
+    total_energi_db = total_energi_m1_db + total_energi_m2_db
+
     return jsonify({
         "m1": m1, "m2": m2,
-        "history_m1": history_m1, "history_m2": history_m2
+        "history_m1": history_m1, "history_m2": history_m2,
+        "total_energi_m1_db": round(total_energi_m1_db, 3),
+        "total_energi_m2_db": round(total_energi_m2_db, 3),
+        "total_energi_db": round(total_energi_db, 3)
     })
+
 
 @dashboard_bp.route('/history/sensor', methods=['GET'])
 @token_required
@@ -52,7 +108,11 @@ def get_sensor_history(current_user):
     total_res = execute_query(count_query, tuple(params) if params else None, fetch_one=True)
     total_count = total_res['total'] if total_res else 0
         
-    query += f" ORDER BY timestamp DESC LIMIT {limit} OFFSET {offset}"
+    sort_order = request.args.get('sort', 'desc').upper()
+    if sort_order not in ['ASC', 'DESC']:
+        sort_order = 'DESC'
+        
+    query += f" ORDER BY timestamp {sort_order} LIMIT {limit} OFFSET {offset}"
     
     data = execute_query(query, tuple(params) if params else None, fetch_all=True)
     if data:

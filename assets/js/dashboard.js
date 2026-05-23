@@ -99,16 +99,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2. Kalkulasi Data Summary
             const p1 = m1.daya || 0;
             const p2 = m2.daya || 0;
-            const e1 = m1.energi || 0;
-            const e2 = m2.energi || 0;
+
+            // Total energi dari Database (paling akurat & kumulatif)
+            const totalEnergiDb    = response.total_energi_db    || 0;
+            const totalEnergiM1Db  = response.total_energi_m1_db || 0;
+            const totalEnergiM2Db  = response.total_energi_m2_db || 0;
 
             const totalDaya = p1 + p2;
-            const totalEnergi = e1 + e2;
-            const estimasiBiaya = totalEnergi * tarifPerKwh;
+            const estimasiBiaya = totalEnergiDb * tarifPerKwh;
 
             // 3. Render ke layer tampilan DOM
             document.getElementById('total_daya').innerHTML = `${window.utils.formatNumber(totalDaya, 0)}<span class="text-lg text-gray-500 ml-1">W</span>`;
-            document.getElementById('total_energi').innerHTML = `${window.utils.formatNumber(totalEnergi, 2)}<span class="text-lg text-gray-500 ml-1">kWh</span>`;
+            document.getElementById('total_energi').innerHTML = `${window.utils.formatNumber(totalEnergiDb, 2)}<span class="text-lg text-gray-500 ml-1">kWh</span>`;
+            document.getElementById('energi_m1_db').textContent = window.utils.formatNumber(totalEnergiM1Db, 2);
+            document.getElementById('energi_m2_db').textContent = window.utils.formatNumber(totalEnergiM2Db, 2);
             document.getElementById('estimasi_biaya').innerText = window.utils.formatRupiah(estimasiBiaya);
 
             // Update Badges

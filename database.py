@@ -2,8 +2,22 @@ import mysql.connector
 from mysql.connector import Error
 import json
 import os
+from collections import deque
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'config', 'settings.json')
+
+# Cache data sensor real-time (In-Memory)
+latest_sensor_data = {
+    "m1": None,
+    "m2": None
+}
+
+# Rolling history chart data (15 titik terbaru, update setiap 3 detik)
+HISTORY_SIZE = 15
+sensor_history = {
+    "m1": deque(maxlen=HISTORY_SIZE),
+    "m2": deque(maxlen=HISTORY_SIZE)
+}
 
 def get_config():
     with open(CONFIG_PATH, 'r') as f:

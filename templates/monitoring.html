@@ -34,7 +34,7 @@
 
             <div class="p-4 sm:p-6 lg:p-8 flex-1">
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                     <!-- Gauge Cards -->
                     <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
                         <p class="text-xs text-gray-400 mb-2 font-medium">Tegangan (Volt)</p>
@@ -72,7 +72,18 @@
                         <p class="text-xs text-gray-400 mb-1">Power Factor (PF)</p>
                         <h4 class="text-2xl font-bold text-pink-400" id="val_pf">0</h4>
                     </div>
+                    <!-- Total Energi dari Database -->
+                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
+                        <p class="text-xs text-gray-400 mb-1">Total Energi DB</p>
+                        <h4 class="text-xl font-bold text-orange-400" id="val_energi_db">0</h4>
+                        <p class="text-xs text-gray-500">kWh</p>
+                        <div class="mt-2 pt-2 border-t border-gray-700/40 text-left space-y-0.5">
+                            <p class="text-xs text-gray-500">M1: <span id="mon_e1_db" class="text-blue-400 font-medium">0</span></p>
+                            <p class="text-xs text-gray-500">M2: <span id="mon_e2_db" class="text-purple-400 font-medium">0</span></p>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div class="glass p-5 rounded-2xl border border-gray-700/50 relative">
                     <div class="flex justify-between items-center mb-4">
@@ -227,6 +238,14 @@
                     chartInstance.data.datasets[4].data = historyData.map(d => isStale ? 0 : d.pf);
                     chartInstance.update('none'); // Update without full animation to avoid flicker
                 }
+
+                // Update Total Energi dari Database
+                const e1db = response.total_energi_m1_db || 0;
+                const e2db = response.total_energi_m2_db || 0;
+                const etdb = response.total_energi_db || 0;
+                document.getElementById('val_energi_db').innerText = window.utils.formatNumber(etdb, 2);
+                document.getElementById('mon_e1_db').innerText = window.utils.formatNumber(e1db, 2);
+                document.getElementById('mon_e2_db').innerText = window.utils.formatNumber(e2db, 2);
             }
         }
 
