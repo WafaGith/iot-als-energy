@@ -34,6 +34,12 @@ def get_prediction(current_user):
     daily_kwh_list = [kwh_by_date[d] for d in dates]
     historical_chart = [{"date": d, "kwh": kwh_by_date[d]} for d in dates]
     
+    if budget <= 0:
+        return jsonify({
+            "days": 0, "hours": 0, "target_kwh": 0.0, 
+            "avg_kwh": 0.0, "forecast": [0.0] * 7, "history": historical_chart, "tarif": tarif
+        })
+        
     if len(daily_kwh_list) < 2:
         avg_kwh = daily_kwh_list[0] if daily_kwh_list else 10.0
         if avg_kwh <= 0: avg_kwh = 10.0
@@ -56,6 +62,9 @@ def get_prediction(current_user):
         s[t] = alpha * daily_kwh_list[t] + (1 - alpha) * (s[t-1] + b[t-1])
         b[t] = beta * (s[t] - s[t-1]) + (1 - beta) * b[t-1]
         
+    avg_kwh = s[-1]
+    if avg_kwh <= 0.1: avg_kwh = 0.1
+        
     accumulated = 0
     forecast_chart = []
     m = 1
@@ -74,8 +83,8 @@ def get_prediction(current_user):
             hours = int((total_time - days) * 24)
             return jsonify({
                 "days": days, "hours": hours, "target_kwh": target_kwh, 
-                "avg_kwh": s[-1], "forecast": forecast_chart, "history": historical_chart, "tarif": tarif
+                "avg_kwh": avg_kwh, "forecast": forecast_chart, "history": historical_chart, "tarif": tarif
             })
         m += 1
         if m > 3650:
-            return jsonify({"days": 3650, "hours": 0, "target_kwh": target_kwh, "avg_kwh": s[-1], "forecast": forecast_chart, "history": historical_chart, "tarif": tarif})
+            return jsonify({"days": 3650, "hours": 0, "target_kwh": target_kwh, "avg_kwh": avg_kwh, "forecast": forecast_chart, "history": historical_chart, "tarif": tarif})

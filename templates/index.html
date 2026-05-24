@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +15,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body class="antialiased text-gray-200">
-    
+
     <div id="layout-wrapper">
         <!-- Sidebar Container (Loads dynamically via JS) -->
         <div id="sidebar-container" style="display: contents;"></div>
@@ -28,7 +30,9 @@
                     <button class="mobile-toggle" id="sidebar-toggle">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <h2 class="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Overview Dashboard</h2>
+                    <h2
+                        class="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                        Overview Dashboard</h2>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-sm text-right hidden sm:block">
@@ -40,7 +44,7 @@
 
             <!-- Page Content -->
             <div class="p-4 sm:p-6 lg:p-8 flex-1">
-                
+
                 <!-- Status Cards Ringkasan M1, M2 dan Total Biaya -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <!-- Total Power -->
@@ -48,9 +52,11 @@
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <p class="text-sm text-gray-400">Total Daya Aktif</p>
-                                <h3 class="text-3xl font-bold text-white mt-1" id="total_daya">0<span class="text-lg text-gray-500 ml-1">W</span></h3>
+                                <h3 class="text-3xl font-bold text-white mt-1" id="total_daya">0<span
+                                        class="text-lg text-gray-500 ml-1">W</span></h3>
                             </div>
-                            <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center">
                                 <i class="fa-solid fa-bolt text-xl"></i>
                             </div>
                         </div>
@@ -61,16 +67,20 @@
                     <div class="glass p-5 rounded-2xl border border-gray-700/50 card-hover-effect">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <p class="text-sm text-gray-400">Total Energi (Database)</p>
-                                <h3 class="text-3xl font-bold text-emerald-400 mt-1" id="total_energi">0<span class="text-lg text-gray-500 ml-1">kWh</span></h3>
+                                <p class="text-sm text-gray-400">Total Energi</p>
+                                <h3 class="text-3xl font-bold text-emerald-400 mt-1" id="total_energi">0<span
+                                        class="text-lg text-gray-500 ml-1">kWh</span></h3>
                             </div>
-                            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center">
                                 <i class="fa-solid fa-database text-xl"></i>
                             </div>
                         </div>
                         <div class="border-t border-gray-700/50 pt-2 mt-1 grid grid-cols-2 gap-1">
-                            <p class="text-xs text-gray-500">M1: <span id="energi_m1_db" class="text-blue-400 font-semibold">0</span> kWh</p>
-                            <p class="text-xs text-gray-500">M2: <span id="energi_m2_db" class="text-purple-400 font-semibold">0</span> kWh</p>
+                            <p class="text-xs text-gray-500">M1: <span id="energi_m1_db"
+                                    class="text-blue-400 font-semibold">0</span> kWh</p>
+                            <p class="text-xs text-gray-500">M2: <span id="energi_m2_db"
+                                    class="text-purple-400 font-semibold">0</span> kWh</p>
                         </div>
                     </div>
 
@@ -81,7 +91,8 @@
                                 <p class="text-sm text-gray-400">Estimasi Tagihan</p>
                                 <h3 class="text-2xl font-bold text-orange-400 mt-1" id="estimasi_biaya">Rp 0</h3>
                             </div>
-                            <div class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center">
                                 <i class="fa-solid fa-wallet text-xl"></i>
                             </div>
                         </div>
@@ -95,7 +106,8 @@
                                 <p class="text-sm text-gray-400">Status Sistem</p>
                                 <h3 class="text-xl font-bold text-white mt-1" id="status_sistem">Menghubungkan...</h3>
                             </div>
-                            <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center">
                                 <i class="fa-solid fa-wifi text-xl"></i>
                             </div>
                         </div>
@@ -111,17 +123,21 @@
                             <canvas id="chartM1"></canvas>
                         </div>
                         <div class="absolute top-5 right-5 text-right">
-                            <span class="px-2 py-1 bg-gray-800 rounded text-xs text-emerald-400 font-mono border border-emerald-500/30" id="badge_m1">Status: OFF</span>
+                            <span
+                                class="px-2 py-1 bg-gray-800 rounded text-xs text-emerald-400 font-mono border border-emerald-500/30"
+                                id="badge_m1">Status: OFF</span>
                         </div>
                     </div>
-                    
+
                     <div class="glass p-5 rounded-2xl border border-gray-700/50 relative">
                         <h3 class="text-lg font-semibold mb-4 text-gray-200">Beban Mesin 2 (Watt) realtime</h3>
                         <div style="height: 300px;">
                             <canvas id="chartM2"></canvas>
                         </div>
                         <div class="absolute top-5 right-5 text-right">
-                            <span class="px-2 py-1 bg-gray-800 rounded text-xs text-emerald-400 font-mono border border-emerald-500/30" id="badge_m2">Status: OFF</span>
+                            <span
+                                class="px-2 py-1 bg-gray-800 rounded text-xs text-emerald-400 font-mono border border-emerald-500/30"
+                                id="badge_m2">Status: OFF</span>
                         </div>
                     </div>
                 </div>
@@ -144,4 +160,5 @@
         }, 1000);
     </script>
 </body>
+
 </html>

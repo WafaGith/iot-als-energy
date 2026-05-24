@@ -60,23 +60,57 @@ def receive_sensor_data():
                 "pf": m2.get('pf', 0)
             })
 
+        # --- SIMPAN KE CACHE FILE UNTUK BOT TELEGRAM (INTER-PROCESS COMMS) ---
+        import json
+        import os
+        cache_path = os.path.join(os.path.dirname(__file__), '..', 'realtime_cache.json')
+        try:
+            with open(cache_path, 'w') as f:
+                json.dump(latest_sensor_data, f)
+        except Exception as e:
+            print("Gagal menulis cache:", e)
+
+        # --- DETEKSI PEMADAMAN LISTRIK & PEMULIHAN PLN ---
+        m1_v = data.get('m1', {}).get('v', -1) if 'm1' in data else -1
+        m2_v = data.get('m2', {}).get('v', -1) if 'm2' in data else -1
+        
+        if m1_v != -1 and m2_v != -1: # Pastikan sensor memberikan data volt
+            # Cek status notifikasi PLN terakhir
+            last_pln_notif = execute_query("SELECT message FROM notifications WHERE message LIKE '%%PEMADAMAN LISTRIK%%' OR message LIKE '%%LISTRIK PLN KEMBALI%%' ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+            last_is_padam = last_pln_notif and "PEMADAMAN LISTRIK" in last_pln_notif['message']
+            
+            if m1_v == 0 and m2_v == 0:
+                # PLN MATI
+                if not last_is_padam:
+                    msg_text = "🚨 <b>PERINGATAN: PEMADAMAN LISTRIK (PLN MATI)</b> 🚨\n\nSensor mendeteksi tegangan 0 Volt pada mesin. Kemungkinan besar sedang terjadi pemadaman listrik."
+                    status, text_res = send_telegram_alert(msg_text)
+                    execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, status + ": " + text_res[:40]), commit=True)
+            elif m1_v > 50 or m2_v > 50:
+                # PLN MENYALA
+                if last_is_padam:
+                    msg_text = "✅ <b>INFO: LISTRIK PLN KEMBALI MENYALA</b> ✅\n\nTegangan listrik PLN telah terdeteksi kembali normal pada sensor."
+                    status, text_res = send_telegram_alert(msg_text)
+                    execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, status + ": " + text_res[:40]), commit=True)
+
+        # --- DETEKSI ESP KEMBALI ONLINE ---
+        try:
+            # Jika kita menerima data (apapun itu), artinya ESP sedang online.
+            # Kita cek apakah notifikasi terakhir adalah peringatan OFFLINE.
+            last_conn_notif = execute_query("SELECT message FROM notifications WHERE message LIKE '%%ESP32 OFFLINE%%' OR message LIKE '%%SISTEM KEMBALI ONLINE%%' ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+            
+            if last_conn_notif and "ESP32 OFFLINE" in last_conn_notif['message']:
+                # Harus mengecek apakah telegram aktif terlebih dahulu
+                settings_data = execute_query("SELECT setting_value FROM settings WHERE setting_key='telegram_active'", fetch_one=True)
+                if settings_data and str(settings_data['setting_value']) == '1':
+                    msg_text = "✅ <b>SISTEM KEMBALI ONLINE</b> ✅\n\nKoneksi dengan ESP32 telah pulih. Sistem kembali menerima data sensor dengan normal."
+                    status, text_res = send_telegram_alert(msg_text)
+                    execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, status + ": " + text_res[:40]), commit=True)
+        except Exception as e:
+            pass
+
         # Hanya simpan ke DB dan jalankan alert jika parameter 'save' bernilai True
         if data.get('save') == True:
-            # Check: Sistem Kembali Online (cek sebelum insert data baru)
-            try:
-                settings_data = execute_query("SELECT * FROM settings", fetch_all=True)
-                if settings_data:
-                    cfg_temp = {item['setting_key']: item['setting_value'] for item in settings_data}
-                    if str(cfg_temp.get('telegram_active', '0')) == '1':
-                        last_record = execute_query("SELECT timestamp FROM sensor_data ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
-                        if last_record and last_record['timestamp']:
-                            diff = (datetime.datetime.now() - last_record['timestamp']).total_seconds()
-                            if diff > 75:
-                                msg_text = "✅ <b>SISTEM KEMBALI ONLINE</b> ✅\n\nKoneksi dengan ESP32 telah pulih. Sistem kembali menerima data sensor dengan normal."
-                                status, text_res = send_telegram_alert(msg_text)
-                                execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, status + ": " + text_res[:40]), commit=True)
-            except Exception as e:
-                pass
+
 
             if 'm1' in data:
                 m1 = data['m1']

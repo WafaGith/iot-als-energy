@@ -18,7 +18,22 @@ def send_message(token, chat_id, text):
     try: urllib.request.urlopen(req, timeout=10)
     except Exception as e: print("Telegram Send Error:", e)
 
+import os
+CACHE_PATH = os.path.join(os.path.dirname(__file__), 'realtime_cache.json')
+
 def get_latest_data(mesin_id):
+    try:
+        if os.path.exists(CACHE_PATH):
+            with open(CACHE_PATH, 'r') as f:
+                cache = json.load(f)
+                key = f"m{mesin_id}"
+                if key in cache and cache[key]:
+                    data = cache[key].copy()
+                    data['timestamp'] = datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S")
+                    return data
+    except Exception as e:
+        print("Cache read error:", e)
+        
     return execute_query("SELECT * FROM sensor_data WHERE mesin_id=%s ORDER BY timestamp DESC LIMIT 1", (mesin_id,), fetch_one=True)
 
 def handle_command(command, token, chat_id, cfg):
@@ -110,23 +125,37 @@ def offline_monitor_loop():
         try:
             cfg = get_settings()
             if cfg.get('telegram_active', '0') == '1':
-                latest = execute_query("SELECT timestamp FROM sensor_data ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
-                if latest and latest['timestamp']:
-                    diffSec = (datetime.now() - latest['timestamp']).total_seconds()
-                    if diffSec > 75:
-                        print(f"[OFFLINE MONITOR] Terdeteksi offline! Selisih waktu: {diffSec} detik")
-                        
-                        # Cek apakah notifikasi terakhir yang dikirim sudah berupa peringatan offline
+                latest_ts = None
+                try:
+                    if os.path.exists(CACHE_PATH):
+                        with open(CACHE_PATH, 'r') as f:
+                            cache = json.load(f)
+                            ts1 = cache.get('m1', {}).get('timestamp') if cache.get('m1') else None
+                            ts2 = cache.get('m2', {}).get('timestamp') if cache.get('m2') else None
+                            if ts1: latest_ts = datetime.strptime(ts1, "%Y-%m-%d %H:%M:%S")
+                            if ts2: 
+                                dt2 = datetime.strptime(ts2, "%Y-%m-%d %H:%M:%S")
+                                if not latest_ts or dt2 > latest_ts: latest_ts = dt2
+                except Exception:
+                    pass
+                    
+                if not latest_ts:
+                    latest = execute_query("SELECT timestamp FROM sensor_data ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
+                    if latest and latest['timestamp']: latest_ts = latest['timestamp']
+
+                if latest_ts:
+                    diffSec = (datetime.now() - latest_ts).total_seconds()
+                    if diffSec > 15:
+                        # Cek apakah notifikasi terakhir sudah OFFLINE
                         last_notif = execute_query("SELECT message FROM notifications ORDER BY timestamp DESC LIMIT 1", fetch_one=True)
                         
                         send_it = True
-                        if last_notif and "Sistem monitoring offline" in last_notif['message']:
+                        if last_notif and "ESP32 OFFLINE" in last_notif['message']:
                             send_it = False
-                            print("[OFFLINE MONITOR] Skip kirim notif karena status terakhir sudah offline")
                         
                         if send_it:
-                            print("[OFFLINE MONITOR] Mengirim notifikasi telegram!")
-                            msg_text = "⚠️ <b>PERINGATAN SISTEM OFFLINE</b> ⚠️\n\nSistem monitoring offline atau terindikasi terjadi pemadaman listrik (tidak ada data diterima selama >1 menit)."
+                            print(f"[OFFLINE MONITOR] Mengirim notifikasi telegram! Selisih: {diffSec} detik")
+                            msg_text = "⚠️ <b>PERINGATAN: ESP32 OFFLINE / PUTUS KONEKSI</b> ⚠️\n\nSistem tidak menerima data dari ESP32 selama lebih dari 15 detik. Periksa koneksi WiFi atau power alat."
                             token = cfg.get('telegram_bot_token', '').strip()
                             chat_id = cfg.get('telegram_chat_id', '').strip()
                             if token and chat_id:
