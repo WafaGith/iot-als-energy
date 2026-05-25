@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,23 +10,27 @@
     <link rel="stylesheet" href="assets/css/sidebar.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body class="antialiased text-gray-200">
-    
+
     <div id="layout-wrapper">
         <!-- Sidebar Container (Loads dynamically via JS) -->
         <div id="sidebar-container" style="display: contents;"></div>
 
         <main id="main-content">
             <header class="topbar">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     <button class="mobile-toggle" id="sidebar-toggle">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <h2 class="text-lg font-semibold text-white">Monitoring Parameter Listrik</h2>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">Monitoring Parameter Listrik</h2>
+                        <p class="text-xs text-gray-500">Data realtime sensor</p>
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-400 font-medium hidden sm:inline">Pilih Mesin:</span>
-                    <select id="mesin-selector" class="w-24 rounded px-2 py-1 ">
+                    <span class="text-xs text-gray-500 font-medium hidden sm:inline">Mesin:</span>
+                    <select id="mesin-selector" class="text-sm rounded-lg px-3 py-1.5 text-sm border-0">
                         <option value="m1">Mesin 1</option>
                         <option value="m2">Mesin 2</option>
                     </select>
@@ -33,10 +38,11 @@
             </header>
 
             <div class="p-4 sm:p-6 lg:p-8 flex-1">
-                
+
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                     <!-- Gauge Cards -->
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
+                    <div
+                        class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
                         <p class="text-xs text-gray-400 mb-2 font-medium">Tegangan (Volt)</p>
                         <div class="w-full max-w-[140px] relative aspect-[2/1]">
                             <canvas id="gauge_v"></canvas>
@@ -45,7 +51,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
+                    <div
+                        class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
                         <p class="text-xs text-gray-400 mb-2 font-medium">Arus (Ampere)</p>
                         <div class="w-full max-w-[140px] relative aspect-[2/1]">
                             <canvas id="gauge_i"></canvas>
@@ -54,7 +61,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
+                    <div
+                        class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col items-center justify-between">
                         <p class="text-xs text-gray-400 mb-2 font-medium">Daya Aktif (Watt)</p>
                         <div class="w-full max-w-[140px] relative aspect-[2/1]">
                             <canvas id="gauge_p"></canvas>
@@ -64,22 +72,27 @@
                         </div>
                     </div>
                     <!-- Standard Cards -->
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
+                    <div
+                        class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
                         <p class="text-xs text-gray-400 mb-1">Frekuensi (Hz)</p>
                         <h4 class="text-2xl font-bold text-purple-400" id="val_f">0</h4>
                     </div>
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
+                    <div
+                        class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
                         <p class="text-xs text-gray-400 mb-1">Power Factor (PF)</p>
                         <h4 class="text-2xl font-bold text-pink-400" id="val_pf">0</h4>
                     </div>
                     <!-- Total Energi dari Database -->
-                    <div class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
+                    <div
+                        class="glass p-4 rounded-xl border border-gray-700/50 text-center flex flex-col justify-center">
                         <p class="text-xs text-gray-400 mb-1">Total Energi DB</p>
                         <h4 class="text-xl font-bold text-orange-400" id="val_energi_db">0</h4>
                         <p class="text-xs text-gray-500">kWh</p>
                         <div class="mt-2 pt-2 border-t border-gray-700/40 text-left space-y-0.5">
-                            <p class="text-xs text-gray-500">M1: <span id="mon_e1_db" class="text-blue-400 font-medium">0</span></p>
-                            <p class="text-xs text-gray-500">M2: <span id="mon_e2_db" class="text-purple-400 font-medium">0</span></p>
+                            <p class="text-xs text-gray-500">M1: <span id="mon_e1_db"
+                                    class="text-blue-400 font-medium">0</span></p>
+                            <p class="text-xs text-gray-500">M2: <span id="mon_e2_db"
+                                    class="text-purple-400 font-medium">0</span></p>
                         </div>
                     </div>
                 </div>
@@ -105,7 +118,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         window.api.checkAuth();
-        
+
         let chartInstance = null;
         let gaugeV = null;
         let gaugeI = null;
@@ -155,7 +168,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { 
+                    plugins: {
                         legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
                         tooltip: { backgroundColor: 'rgba(17, 24, 39, 0.9)', titleColor: '#fff', bodyColor: '#cbd5e1', padding: 10, borderColor: 'rgba(56, 189, 248, 0.3)', borderWidth: 1 }
                     },
@@ -168,7 +181,7 @@
                     }
                 }
             });
-            
+
             // Init Gauges
             gaugeV = createGauge(document.getElementById('gauge_v').getContext('2d'), '#facc15', 250);
             gaugeI = createGauge(document.getElementById('gauge_i').getContext('2d'), '#60a5fa', 10);
@@ -177,25 +190,25 @@
 
         async function fetchRealtime() {
             const response = await window.api.fetch('/realtime');
-            if(!response.error) {
+            if (!response.error) {
                 const selected = document.getElementById('mesin-selector').value;
                 let data = response[selected] || {};
                 let historyData = response['history_' + selected] || [];
 
                 // Cek Staleness / Offline
                 let isStale = false;
-                if(data.timestamp) {
+                if (data.timestamp) {
                     const tString = data.timestamp.replace(' ', 'T');
                     const lastDate = new Date(tString);
                     const diffSec = (new Date() - lastDate) / 1000;
-                    if(diffSec > 75) {
+                    if (diffSec > 75) {
                         isStale = true;
                     }
                 } else {
                     isStale = true;
                 }
 
-                if(isStale) {
+                if (isStale) {
                     // Jika mati, paksa jadi 0
                     data.volt = 0; data.arus = 0; data.daya = 0; data.frekuensi = 0; data.pf = 0;
                 }
@@ -206,30 +219,30 @@
                 document.getElementById('val_p').innerText = window.utils.formatNumber(data.daya);
                 document.getElementById('val_f').innerText = window.utils.formatNumber(data.frekuensi);
                 document.getElementById('val_pf').innerText = window.utils.formatNumber(data.pf, 2);
-                
+
                 // Update Gauges
-                if(gaugeV) {
+                if (gaugeV) {
                     let v = parseFloat(data.volt) || 0;
                     gaugeV.data.datasets[0].data = [v, Math.max(0, 250 - v)];
                     gaugeV.update('none');
                 }
-                if(gaugeI) {
+                if (gaugeI) {
                     let i = parseFloat(data.arus) || 0;
                     gaugeI.data.datasets[0].data = [i, Math.max(0, 10 - i)];
                     gaugeI.update('none');
                 }
-                if(gaugeP) {
+                if (gaugeP) {
                     let p = parseFloat(data.daya) || 0;
                     gaugeP.data.datasets[0].data = [p, Math.max(0, 2500 - p)];
                     gaugeP.update('none');
                 }
 
-                if(data.timestamp) {
+                if (data.timestamp) {
                     document.getElementById('last_sync').innerHTML = window.utils.formatTimeOnly(data.timestamp) + (isStale ? ' <span class="text-red-500 font-bold ml-1">(OFFLINE)</span>' : ' <span class="text-emerald-400 font-bold ml-1">(ONLINE)</span>');
                 }
-                
+
                 // Update Graphic
-                if(chartInstance && historyData.length > 0) {
+                if (chartInstance && historyData.length > 0) {
                     chartInstance.data.labels = historyData.map(d => d.timestamp);
                     chartInstance.data.datasets[0].data = historyData.map(d => isStale ? 0 : d.volt);
                     chartInstance.data.datasets[1].data = historyData.map(d => isStale ? 0 : d.arus);
@@ -260,4 +273,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -82,7 +82,7 @@ def receive_sensor_data():
             if m1_v == 0 and m2_v == 0:
                 # PLN MATI
                 if not last_is_padam:
-                    msg_text = "🚨 <b>PERINGATAN: PEMADAMAN LISTRIK (PLN MATI)</b> 🚨\n\nSensor mendeteksi tegangan 0 Volt pada mesin. Kemungkinan besar sedang terjadi pemadaman listrik."
+                    msg_text = "⚠️ <b>PERINGATAN: PEMADAMAN LISTRIK (PLN MATI)</b> ⚠️\n\nSensor mendeteksi tegangan 0 Volt pada mesin. Kemungkinan besar sedang terjadi pemadaman listrik."
                     status, text_res = send_telegram_alert(msg_text)
                     execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, status + ": " + text_res[:40]), commit=True)
             elif m1_v > 50 or m2_v > 50:
@@ -156,7 +156,7 @@ def receive_sensor_data():
                             if m1_active: active_machines.append("Mesin 1")
                             if m2_active: active_machines.append("Mesin 2")
                             
-                            msg_text = f"🌅 <b>PEMBERITAHUAN AWAL KERJA</b> 🌅\n\nSelamat beraktivitas!\n{' dan '.join(active_machines)} telah mulai dihidupkan pada pukul {datetime.datetime.now().strftime('%H:%M')}.\nSemoga operasional hari ini berjalan lancar."
+                            msg_text = f" <b>PEMBERITAHUAN AWAL KERJA</b> \n\nSelamat beraktivitas!\n{' dan '.join(active_machines)} telah mulai dihidupkan pada pukul {datetime.datetime.now().strftime('%H:%M')}.\nSemoga operasional hari ini berjalan lancar."
                             status, text_res = send_telegram_alert(msg_text)
                             execute_query("INSERT INTO notifications (message, status) VALUES (%s, %s)", (msg_text, status + ": " + text_res[:40]), commit=True)
 

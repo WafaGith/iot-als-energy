@@ -22,11 +22,14 @@
         <main id="main-content">
             <!-- Topbar -->
             <header class="topbar">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     <button class="mobile-toggle" id="sidebar-toggle">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <h2 class="text-lg font-semibold text-white">Data Historis Sensor</h2>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">Riwayat Data Sensor</h2>
+                        <p class="text-xs text-gray-500">Data historis pengukuran listrik</p>
+                    </div>
                 </div>
             </header>
 
@@ -97,7 +100,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="pagination-bar">
                         <div class="pagination-controls">
                             <button id="btn-prev"><i class="fa-solid fa-chevron-left"></i> Prev</button>
@@ -156,8 +159,8 @@
                 response.data.forEach(row => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="font-mono text-xs">${window.utils.formatDate(row.timestamp)}</td>
-                        <td><span class="px-2 py-1 bg-blue-500/10 text-blue-400 rounded text-xs border border-blue-500/20">Mesin ${row.mesin_id}</span></td>
+                        <td class="font-mono text-xs text-gray-400">${window.utils.formatDate(row.timestamp)}</td>
+                        <td><span class="badge badge-blue">Mesin ${row.mesin_id}</span></td>
                         <td>${window.utils.formatNumber(row.volt)} V</td>
                         <td>${window.utils.formatNumber(row.arus)} A</td>
                         <td class="text-emerald-400 font-semibold">${window.utils.formatNumber(row.daya)} W</td>
@@ -167,10 +170,10 @@
                     `;
                     tbody.appendChild(tr);
                 });
-                
+
                 totalPages = response.total_pages || 1;
                 document.getElementById('page-info').innerText = `Hal ${currentPage} dari ${totalPages}`;
-                
+
                 document.getElementById('btn-prev').disabled = currentPage <= 1;
                 document.getElementById('btn-next').disabled = currentPage >= totalPages;
             } else {
@@ -192,29 +195,29 @@
             currentPage = 1; // Reset to page 1 on new filter
             fetchHistory();
         });
-        
+
         const limitDropdown = document.getElementById('filter_limit');
-        if(limitDropdown) {
+        if (limitDropdown) {
             limitDropdown.addEventListener('change', () => {
                 currentPage = 1; // Reset to page 1 on limit change
                 fetchHistory();
             });
         }
-        
+
         const btnPrev = document.getElementById('btn-prev');
-        if(btnPrev) {
+        if (btnPrev) {
             btnPrev.addEventListener('click', () => {
-                if(currentPage > 1) {
+                if (currentPage > 1) {
                     currentPage--;
                     fetchHistory();
                 }
             });
         }
-        
+
         const btnNext = document.getElementById('btn-next');
-        if(btnNext) {
+        if (btnNext) {
             btnNext.addEventListener('click', () => {
-                if(currentPage < totalPages) {
+                if (currentPage < totalPages) {
                     currentPage++;
                     fetchHistory();
                 }
@@ -231,7 +234,7 @@
             const endDate = document.getElementById('filter_end').value;
             const mesinId = document.getElementById('filter_mesin').value;
             const sortOrder = document.getElementById('filter_sort') ? document.getElementById('filter_sort').value : 'desc';
-            
+
             // Ambil semua data (limit besar) untuk diekspor sesuai filter
             let query = `/history/sensor?limit=100000&page=1&sort=${sortOrder}`;
             if (startDate) query += `&start_date=${startDate}`;
@@ -257,7 +260,7 @@
                     const ws = XLSX.utils.json_to_sheet(dataForExcel);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, "Riwayat Data");
-                    
+
                     // Simpan sebagai file .xlsx
                     XLSX.writeFile(wb, "Riwayat_Data_Monitoring.xlsx");
                 } else {

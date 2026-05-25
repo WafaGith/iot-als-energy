@@ -1,37 +1,52 @@
 <aside id="sidebar">
     <div class="sidebar-header">
-        <i class="fa-solid fa-bolt text-blue-500 text-2xl"></i>
-        <span class="sidebar-brand text-gradient">ALS Energy</span>
+        <div class="sidebar-icon">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+            <div class="sidebar-brand">ALS Energy</div>
+            <div class="sidebar-sub">Monitoring System</div>
+        </div>
     </div>
+
     <nav class="sidebar-nav">
         <a href="index.html" class="nav-item">
-            <i class="fa-solid fa-gauge"></i> Dashboard
+            <div class="nav-icon"><i class="fa-solid fa-gauge-high"></i></div>
+            Dashboard
         </a>
         <a href="monitoring.html" class="nav-item">
-            <i class="fa-solid fa-chart-line"></i> Monitoring
+            <div class="nav-icon"><i class="fa-solid fa-wave-square"></i></div>
+            Monitoring
         </a>
         <a href="riwayat_data.html" class="nav-item">
-            <i class="fa-solid fa-table-list"></i> Riwayat Data
+            <div class="nav-icon"><i class="fa-solid fa-table-list"></i></div>
+            Riwayat Data
         </a>
-        <a href="prediksi.html" class="nav-item text-purple-400 font-medium">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Prediksi
-        </a>
-        <a href="log_sistem.html" class="nav-item">
-            <i class="fa-solid fa-clock-rotate-left"></i> Log Sistem
+        <a href="prediksi.html" class="nav-item">
+            <div class="nav-icon"><i class="fa-solid fa-chart-line"></i></div>
+            Prediksi Energi
         </a>
         <a href="notifikasi.html" class="nav-item">
-            <i class="fa-solid fa-bell"></i> Notifikasi
+            <div class="nav-icon"><i class="fa-solid fa-bell"></i></div>
+            Notifikasi
+        </a>
+        <a href="log_sistem.html" class="nav-item">
+            <div class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            Log Sistem
         </a>
         <a href="pengaturan.html" class="nav-item">
-            <i class="fa-solid fa-gear"></i> Pengaturan
+            <div class="nav-icon"><i class="fa-solid fa-sliders"></i></div>
+            Pengaturan
         </a>
     </nav>
+
     <div class="user-profile">
         <div class="user-avatar">A</div>
         <div>
-            <p class="text-sm font-semibold text-white">Administrator</p>
-            <a href="logout.html" class="text-xs text-red-400 hover:text-red-300">Logout <i
-                    class="fa-solid fa-sign-out-alt"></i></a>
+            <p class="text-sm font-semibold text-white">Admin</p>
+            <a href="logout.html" class="text-xs text-gray-500 hover:text-red-400 transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i>Logout
+            </a>
         </div>
     </div>
 </aside>

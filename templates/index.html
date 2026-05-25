@@ -5,139 +5,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Monitoring Listrik Admin</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ChartJS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/sidebar.css">
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="antialiased text-gray-200">
+<body class="antialiased">
 
     <div id="layout-wrapper">
-        <!-- Sidebar Container (Loads dynamically via JS) -->
         <div id="sidebar-container" style="display: contents;"></div>
 
-        <!-- Main Content -->
         <main id="main-content">
-            <!-- Topbar -->
             <header class="topbar">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     <button class="mobile-toggle" id="sidebar-toggle">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <h2
-                        class="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-                        Overview Dashboard</h2>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">Overview Dashboard</h2>
+                        <p class="text-xs text-gray-500">Ringkasan sistem monitoring energi listrik</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="text-sm text-right hidden sm:block">
-                        <div id="top-date" class="font-medium text-gray-300"></div>
-                        <div id="top-time" class="text-gray-500 font-mono text-xs"></div>
+                <div class="hidden sm:flex items-center gap-3 text-right">
+                    <div>
+                        <div id="top-date" class="text-xs font-medium text-gray-300"></div>
+                        <div id="top-time" class="text-xs text-gray-500 font-mono"></div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-sky-900/40 flex items-center justify-center">
+                        <i class="fa-solid fa-clock text-sky-400 text-xs"></i>
                     </div>
                 </div>
             </header>
 
-            <!-- Page Content -->
-            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+            <div class="p-4 sm:p-6 flex-1">
 
-                <!-- Status Cards Ringkasan M1, M2 dan Total Biaya -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <!-- Total Power -->
-                    <div class="glass p-5 rounded-2xl border border-gray-700/50 card-hover-effect">
-                        <div class="flex justify-between items-start mb-4">
+                <!-- STAT CARDS -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+                    <div class="glass p-5 rounded-2xl card-hover-effect">
+                        <div class="flex items-start justify-between mb-3">
                             <div>
-                                <p class="text-sm text-gray-400">Total Daya Aktif</p>
-                                <h3 class="text-3xl font-bold text-white mt-1" id="total_daya">0<span
-                                        class="text-lg text-gray-500 ml-1">W</span></h3>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Daya Aktif</p>
+                                <h3 class="text-2xl font-bold text-white mt-1.5" id="total_daya">
+                                    0 <span class="text-sm text-gray-500 font-normal">W</span>
+                                </h3>
                             </div>
-                            <div
-                                class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-bolt text-xl"></i>
+                            <div class="w-10 h-10 bg-sky-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-bolt text-sky-400"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400">Gabungan Mesin 1 & 2</p>
+                        <p class="text-xs text-gray-600">Gabungan Mesin 1 &amp; 2</p>
+                        <div class="h-0.5 bg-sky-600/30 rounded mt-3"></div>
                     </div>
 
-                    <!-- Total Energy from DB -->
-                    <div class="glass p-5 rounded-2xl border border-gray-700/50 card-hover-effect">
-                        <div class="flex justify-between items-start mb-3">
+                    <div class="glass p-5 rounded-2xl card-hover-effect">
+                        <div class="flex items-start justify-between mb-3">
                             <div>
-                                <p class="text-sm text-gray-400">Total Energi</p>
-                                <h3 class="text-3xl font-bold text-emerald-400 mt-1" id="total_energi">0<span
-                                        class="text-lg text-gray-500 ml-1">kWh</span></h3>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Energi</p>
+                                <h3 class="text-2xl font-bold text-emerald-400 mt-1.5" id="total_energi">
+                                    0 <span class="text-sm text-gray-500 font-normal">kWh</span>
+                                </h3>
                             </div>
-                            <div
-                                class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-database text-xl"></i>
+                            <div class="w-10 h-10 bg-emerald-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-database text-emerald-400"></i>
                             </div>
                         </div>
-                        <div class="border-t border-gray-700/50 pt-2 mt-1 grid grid-cols-2 gap-1">
-                            <p class="text-xs text-gray-500">M1: <span id="energi_m1_db"
-                                    class="text-blue-400 font-semibold">0</span> kWh</p>
-                            <p class="text-xs text-gray-500">M2: <span id="energi_m2_db"
-                                    class="text-purple-400 font-semibold">0</span> kWh</p>
+                        <div class="flex gap-3 text-xs text-gray-600">
+                            <span>M1: <span id="energi_m1_db" class="text-sky-400 font-semibold">0</span> kWh</span>
+                            <span>M2: <span id="energi_m2_db" class="text-violet-400 font-semibold">0</span> kWh</span>
                         </div>
+                        <div class="h-0.5 bg-emerald-600/30 rounded mt-3"></div>
                     </div>
 
-                    <!-- Estimasi Biaya -->
-                    <div class="glass p-5 rounded-2xl border border-gray-700/50 card-hover-effect">
-                        <div class="flex justify-between items-start mb-4">
+                    <div class="glass p-5 rounded-2xl card-hover-effect">
+                        <div class="flex items-start justify-between mb-3">
                             <div>
-                                <p class="text-sm text-gray-400">Estimasi Tagihan</p>
-                                <h3 class="text-2xl font-bold text-orange-400 mt-1" id="estimasi_biaya">Rp 0</h3>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Estimasi Tagihan</p>
+                                <h3 class="text-xl font-bold text-amber-400 mt-1.5" id="estimasi_biaya">Rp 0</h3>
                             </div>
-                            <div
-                                class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-wallet text-xl"></i>
+                            <div class="w-10 h-10 bg-amber-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-wallet text-amber-400"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400">Berdasar tarif <span id="tarif_display">Rp 0/kWh</span></p>
+                        <p class="text-xs text-gray-600">Tarif: <span id="tarif_display" class="text-gray-500">Rp 0/kWh</span></p>
+                        <div class="h-0.5 bg-amber-600/30 rounded mt-3"></div>
                     </div>
 
-                    <!-- Status Koneksi -->
-                    <div class="glass p-5 rounded-2xl border border-gray-700/50 card-hover-effect">
-                        <div class="flex justify-between items-start mb-4">
+                    <div class="glass p-5 rounded-2xl card-hover-effect">
+                        <div class="flex items-start justify-between mb-3">
                             <div>
-                                <p class="text-sm text-gray-400">Status Sistem</p>
-                                <h3 class="text-xl font-bold text-white mt-1" id="status_sistem">Menghubungkan...</h3>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Status Sistem</p>
+                                <h3 class="text-lg font-bold text-white mt-1.5" id="status_sistem">Menghubungkan...</h3>
                             </div>
-                            <div
-                                class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-wifi text-xl"></i>
+                            <div class="w-10 h-10 bg-violet-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-wifi text-violet-400"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400">Update terakhir: <span id="last_update">-</span></p>
+                        <p class="text-xs text-gray-600">Update: <span id="last_update" class="text-gray-500">-</span></p>
+                        <div class="h-0.5 bg-violet-600/30 rounded mt-3"></div>
                     </div>
+
                 </div>
 
-                <!-- Charts Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="glass p-5 rounded-2xl border border-gray-700/50 relative">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-200">Beban Mesin 1 (Watt) realtime</h3>
-                        <div style="height: 300px;">
-                            <canvas id="chartM1"></canvas>
+                <!-- CHARTS -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="glass p-5 rounded-2xl relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-white">Beban Mesin 1</h3>
+                                <p class="text-xs text-gray-500">Daya aktif realtime (Watt)</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-900/40 text-sky-300 border border-sky-500/20" id="badge_m1">OFF</span>
                         </div>
-                        <div class="absolute top-5 right-5 text-right">
-                            <span
-                                class="px-2 py-1 bg-gray-800 rounded text-xs text-emerald-400 font-mono border border-emerald-500/30"
-                                id="badge_m1">Status: OFF</span>
+                        <div style="height: 280px;">
+                            <canvas id="chartM1"></canvas>
                         </div>
                     </div>
 
-                    <div class="glass p-5 rounded-2xl border border-gray-700/50 relative">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-200">Beban Mesin 2 (Watt) realtime</h3>
-                        <div style="height: 300px;">
-                            <canvas id="chartM2"></canvas>
+                    <div class="glass p-5 rounded-2xl relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-white">Beban Mesin 2</h3>
+                                <p class="text-xs text-gray-500">Daya aktif realtime (Watt)</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-900/40 text-violet-300 border border-violet-500/20" id="badge_m2">OFF</span>
                         </div>
-                        <div class="absolute top-5 right-5 text-right">
-                            <span
-                                class="px-2 py-1 bg-gray-800 rounded text-xs text-emerald-400 font-mono border border-emerald-500/30"
-                                id="badge_m2">Status: OFF</span>
+                        <div style="height: 280px;">
+                            <canvas id="chartM2"></canvas>
                         </div>
                     </div>
                 </div>
@@ -146,13 +142,11 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="assets/js/api.js"></script>
     <script src="assets/js/sidebar.js"></script>
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/dashboard.js"></script>
     <script>
-        // Clock
         setInterval(() => {
             const now = new Date();
             document.getElementById('top-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });

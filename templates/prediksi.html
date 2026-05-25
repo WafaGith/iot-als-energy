@@ -4,112 +4,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediksi Cerdas - Monitoring Listrik Admin</title>
+    <title>Prediksi Konsumsi Energi - Monitoring Listrik</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/sidebar.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <style>
+        body {
+            background-color: #0f1117;
+        }
+
+        .card {
+            background: #1a1f2e;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+        }
+
+        .card-sm {
+            background: #1e2434;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .card-sm:hover {
+            border-color: rgba(56, 189, 248, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Clean table */
+        .data-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table thead th {
+            background: #131722;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            padding: 11px 16px;
+            font-weight: 700;
+        }
+
+        .data-table thead th:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .data-table thead th:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(56, 189, 248, 0.04);
+        }
+
+        .data-table tbody td {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .table-scroll {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        /* Filter strip */
+        .filter-input {
+            background: #131722;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filter-input:focus {
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+
+        /* Stat indicator bar at bottom of card */
+        .indicator-bar {
+            height: 3px;
+            border-radius: 99px;
+            margin-top: 12px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body class="antialiased text-gray-200">
-
     <div id="layout-wrapper">
         <div id="sidebar-container" style="display: contents;"></div>
 
         <main id="main-content">
-            <header class="topbar">
+            <header class="topbar" style="background: #12151f; border-bottom: 1px solid rgba(255,255,255,0.06);">
                 <div class="flex items-center gap-4">
-                    <button class="mobile-toggle" id="sidebar-toggle">
+                    <button class="mobile-toggle text-gray-400 hover:text-white" id="sidebar-toggle">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <h2 class="text-lg font-semibold text-white">Prediksi Konsumsi Energi</h2>
+                    <div>
+                        <h2 class="text-base font-semibold text-white">Prediksi Konsumsi Energi</h2>
+                        <p class="text-xs text-gray-500">Metode Double Exponential Smoothing (DES)</p>
+                    </div>
                 </div>
             </header>
 
-            <div class="p-4 sm:p-6 lg:p-8 flex-1">
-                <div class="max-w-6xl mx-auto space-y-6">
+            <div class="p-4 sm:p-6 flex-1 w-full space-y-5">
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Input Card -->
-                        <div
-                            class="glass p-6 sm:p-8 rounded-2xl border border-gray-700/50 relative overflow-hidden h-fit">
-                            <div
-                                class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20">
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-200 mb-4 flex items-center gap-3">
-                                <i class="fa-solid fa-calculator text-purple-400"></i> Kalkulator Saldo
-                            </h3>
-                            <p class="text-sm text-gray-400 mb-6">Masukkan nominal budget saldo token listrik Anda untuk
-                                memprediksi berapa lama daya tersebut akan bertahan berdasarkan tren historis.</p>
+                <!-- FILTER BAR -->
+                <div class="card p-4">
+                    <form id="filter-form" class="flex flex-col sm:flex-row gap-3 flex-wrap items-end">
+                        <div class="flex-1 min-w-[150px]">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Rentang
+                                Prediksi</label>
+                            <select id="forecast_period" class="filter-input">
+                                <option value="1">1 Hari Ke Depan</option>
+                                <option value="7" selected>7 Hari Ke Depan</option>
+                                <option value="30">30 Hari Ke Depan</option>
+                            </select>
+                        </div>
+                        <div class="flex-1 min-w-[140px]">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Mesin</label>
+                            <select id="machine_id" class="filter-input">
+                                <option value="all">Semua Mesin</option>
+                                <option value="1">Mesin 1</option>
+                                <option value="2">Mesin 2</option>
+                            </select>
+                        </div>
+                        <div class="flex-1 min-w-[140px]">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Dari
+                                Tanggal</label>
+                            <input type="date" id="date_start" class="filter-input">
+                        </div>
+                        <div class="flex-1 min-w-[140px]">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Sampai
+                                Tanggal</label>
+                            <input type="date" id="date_end" class="filter-input">
+                        </div>
+                        <div>
+                            <button type="submit" id="btn-submit"
+                                class="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm py-2.5 px-5 rounded-lg transition-all active:scale-95 shadow-md shadow-sky-900/30 whitespace-nowrap">
+                                <i class="fa-solid fa-magnifying-glass-chart"></i> Hitung Prediksi
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-                            <form id="predict-form" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-300 mb-2">Simulasi Saldo / Budget
-                                        (Rp)</label>
-                                    <div class="relative">
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
-                                            <b>Rp</b>
-                                        </div>
-                                        <input type="number" id="budget_input"
-                                            class="w-full pl-12 bg-gray-900 border border-gray-700 focus:border-purple-500 focus:ring-purple-500/20 py-3 rounded-xl transition text-lg font-bold"
-                                            placeholder="100000" min="1" required>
-                                    </div>
+                <!-- ERROR STATE -->
+                <div id="error-state" class="hidden card p-4 border border-red-800/50 bg-red-950/30">
+                    <div class="flex items-start gap-3 text-red-300 text-sm">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-400"></i>
+                        <div>
+                            <p class="font-semibold mb-0.5">Gagal Memproses Data</p>
+                            <p id="error-message" class="text-red-400 text-xs"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD CONTENT -->
+                <div id="dashboard-content" class="space-y-5">
+
+                    <!-- TOP 4 STAT CARDS -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+                        <div class="card-sm p-4">
+                            <div class="flex items-start justify-between mb-1">
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Estimasi Konsumsi
+                                </p>
+                                <div class="w-7 h-7 rounded-lg bg-sky-900/40 flex items-center justify-center">
+                                    <i class="fa-solid fa-bolt text-sky-400 text-xs"></i>
                                 </div>
-
-                                <button type="submit"
-                                    class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-purple-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 mt-4">
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i> PREDIKSI SEKARANG
-                                </button>
-                            </form>
+                            </div>
+                            <p class="text-2xl font-bold text-white mt-2" id="val_total_kwh">— kWh</p>
+                            <p class="text-xs text-gray-500 mt-1">Estimasi <span id="val_period_label">—</span> ke depan
+                            </p>
+                            <div class="indicator-bar bg-sky-600/40"></div>
                         </div>
 
-                        <!-- Result Card -->
-                        <div class="glass p-6 sm:p-8 rounded-2xl border border-gray-700/50 relative overflow-hidden lg:col-span-2 hidden"
-                            id="result-card">
-                            <div
-                                class="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10">
-                            </div>
-
-                            <h3 class="text-xl font-bold text-emerald-400 mb-6 border-b border-gray-700/50 pb-4">
-                                HASIL PERAMALAN
-                            </h3>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div class="bg-gray-800/50 p-5 rounded-xl border border-gray-700 text-center">
-                                    <p class="text-gray-400 text-sm mb-1">Estimasi Bertahan Selama</p>
-                                    <h4 class="text-3xl font-black text-white" id="res_days">0 <span
-                                            class="text-lg font-medium text-gray-500">Hari</span></h4>
-                                    <p class="text-emerald-400 font-bold mt-1" id="res_hours">0 Jam</p>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div
-                                        class="bg-gray-800/30 p-4 rounded-xl border border-gray-700 text-center flex flex-col justify-center">
-                                        <p class="text-gray-400 text-xs mb-1">Target Listrik</p>
-                                        <h5 class="text-xl font-bold text-blue-400" id="res_kwh">0 <span
-                                                class="text-sm">kWh</span></h5>
-                                    </div>
-                                    <div
-                                        class="bg-gray-800/30 p-4 rounded-xl border border-gray-700 text-center flex flex-col justify-center">
-                                        <p class="text-gray-400 text-xs mb-1">Konsumsi Harian</p>
-                                        <h5 class="text-xl font-bold text-yellow-400" id="res_avg">0 <span
-                                                class="text-sm">kWh/hr</span></h5>
-                                    </div>
+                        <div class="card-sm p-4">
+                            <div class="flex items-start justify-between mb-1">
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Estimasi Biaya</p>
+                                <div class="w-7 h-7 rounded-lg bg-emerald-900/40 flex items-center justify-center">
+                                    <i class="fa-solid fa-wallet text-emerald-400 text-xs"></i>
                                 </div>
                             </div>
+                            <p class="text-xl font-bold text-white mt-2" id="val_total_cost">—</p>
+                            <p class="text-xs text-gray-500 mt-1">Berdasarkan tarif aktif</p>
+                            <div class="indicator-bar bg-emerald-600/40"></div>
+                        </div>
 
-                            <!-- Chart -->
-                            <div class="h-[300px] w-full relative">
-                                <canvas id="predictionChart"></canvas>
+                        <div class="card-sm p-4">
+                            <div class="flex items-start justify-between mb-1">
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Rata-rata Harian
+                                </p>
+                                <div class="w-7 h-7 rounded-lg bg-violet-900/40 flex items-center justify-center">
+                                    <i class="fa-solid fa-chart-simple text-violet-400 text-xs"></i>
+                                </div>
                             </div>
-                            <p class="text-xs text-gray-500 mt-4 text-center"><i class="fa-solid fa-circle-info"></i>
-                                Kalkulasi menggunakan metode peramalan <b>Double Exponential Smoothing</b> dengan
-                                penyesuaian Tren.</p>
+                            <p class="text-2xl font-bold text-white mt-2" id="val_avg_kwh">— kWh</p>
+                            <p class="text-xs text-gray-500 mt-1">Data <span id="val_training_count">—</span> hari
+                                training</p>
+                            <div class="indicator-bar bg-violet-600/40"></div>
+                        </div>
+
+                        <div class="card-sm p-4">
+                            <div class="flex items-start justify-between mb-1">
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Tren Konsumsi</p>
+                                <div class="w-7 h-7 rounded-lg bg-amber-900/40 flex items-center justify-center">
+                                    <i id="trend_icon" class="fa-solid fa-minus text-amber-400 text-xs"></i>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-white mt-2" id="val_trend">—</p>
+                            <p class="text-xs text-gray-500 mt-1">Kecenderungan tren harian</p>
+                            <div id="trend_bar" class="indicator-bar bg-amber-600/40"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- CHART FULL WIDTH -->
+                    <div class="card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-white">Grafik Aktual vs Hasil Forecast</h3>
+                                <p class="text-xs text-gray-500">Scroll untuk zoom &bull; Klik &amp; geser</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-4 text-xs text-gray-400">
+                                    <span class="flex items-center gap-1.5"><span
+                                            class="inline-block w-4 h-0.5 bg-sky-500 rounded"></span> Aktual</span>
+                                    <span class="flex items-center gap-1.5"><span
+                                            class="inline-block w-4 border-t-2 border-dashed border-amber-400"></span>
+                                        Forecast</span>
+                                </div>
+                                <button onclick="if(chartInstance) chartInstance.resetZoom()"
+                                    class="text-xs text-gray-500 hover:text-gray-200 bg-gray-800 hover:bg-gray-700 px-2.5 py-1 rounded-lg transition border border-white/5"
+                                    title="Reset Zoom">
+                                    <i class="fa-solid fa-magnifying-glass-minus"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative h-80">
+                            <canvas id="predictionChart"></canvas>
                         </div>
                     </div>
 
-                </div>
+                    <!-- BOTTOM ROW: PARAMS + TABLE -->
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+
+                        <!-- DES PARAMETERS (1/4) -->
+                        <div class="card p-5">
+                            <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-sky-400"></i> Parameter DES
+                            </h3>
+                            <div class="space-y-2.5 text-sm">
+                                <div class="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span class="text-gray-400">Alpha (α)</span>
+                                    <span class="font-bold text-sky-300" id="param_alpha">—</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span class="text-gray-400">Beta (β)</span>
+                                    <span class="font-bold text-sky-300" id="param_beta">—</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span class="text-gray-400">Nilai MAPE</span>
+                                    <span class="font-bold" id="param_mape">—</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-400">Data Training</span>
+                                    <span class="font-bold text-gray-200" id="param_training">— hari</span>
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-gray-600 mt-4 leading-relaxed">
+                                α dan β dipilih otomatis dari 81 kombinasi trial &amp; error (0.1–0.9 × 0.1–0.9).
+                            </p>
+                        </div>
+
+                        <!-- DATA TABLE (3/4) -->
+                        <div class="card p-5 lg:col-span-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h3 class="text-sm font-semibold text-white">Data Detail Peramalan</h3>
+                                    <p class="text-xs text-gray-500">Hasil perhitungan DES pada data historis (data
+                                        latih)</p>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-400">
+                                    <button id="prevPage"
+                                        class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+                                    <span id="pageInfo"
+                                        class="px-3 py-1.5 bg-gray-900 rounded-lg border border-white/5">1 / 1</span>
+                                    <button id="nextPage"
+                                        class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-scroll">
+                                <table class="data-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">Tanggal</th>
+                                            <th class="text-right text-sky-400">Aktual (kWh)</th>
+                                            <th class="text-right text-amber-400">Forecast (kWh)</th>
+                                            <th class="text-right">Error</th>
+                                            <th class="text-right">Absolute Error</th>
+                                            <th class="text-right text-emerald-400">APE (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table_body">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-gray-600 italic py-10">
+                                                Belum ada data. Tekan tombol "Hitung Prediksi" untuk memuat hasil.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div><!-- end dashboard-content -->
+
             </div>
         </main>
     </div>
@@ -120,65 +381,68 @@
     <script src="assets/js/utils.js"></script>
     <script>
         window.api.checkAuth();
+
+        // Default date range: last 40 days
+        const today = new Date();
+        const past = new Date();
+        past.setDate(today.getDate() - 40);
+        document.getElementById('date_end').value = today.toISOString().split('T')[0];
+        document.getElementById('date_start').value = past.toISOString().split('T')[0];
+
         let chartInstance = null;
+        let globalTableData = [];
+        let currentPage = 1;
+        const ROWS_PER_PAGE = 10;
 
-        function renderChart(history, forecast) {
+        const periodLabels = { '1': '1 hari', '7': '7 hari', '30': '30 hari' };
+
+        // ---- CHART RENDER ----
+        function renderChart(histTable, futureArr) {
             const ctx = document.getElementById('predictionChart').getContext('2d');
-            Chart.defaults.color = '#9ca3af';
-            Chart.defaults.font.family = "'Inter', sans-serif";
+            if (chartInstance) chartInstance.destroy();
 
-            // Prepare Data
-            const labels = [];
-            const histData = [];
-            const foreData = [];
-
-            // Map History
-            history.forEach(h => {
-                labels.push(h.date);
-                histData.push(h.kwh);
-                foreData.push(null);
+            const labels = [], hist = [], fore = [];
+            histTable.forEach(r => {
+                labels.push(r.date);
+                hist.push(r.actual);
+                fore.push(r.forecast);
             });
 
-            // Map Forecast
-            // We link the last history point to forecast so the line connects
-            if (history.length > 0) {
-                let lastDate = new Date(history[history.length - 1].date);
-                let lastKwh = history[history.length - 1].kwh;
-
-                // Add the connecting point
-                foreData[foreData.length - 1] = lastKwh;
-
-                forecast.forEach((val, index) => {
-                    lastDate.setDate(lastDate.getDate() + 1);
-                    labels.push(lastDate.toISOString().split('T')[0]);
-                    histData.push(null);
-                    foreData.push(val);
+            // link last hist point to future
+            if (histTable.length > 0 && futureArr.length > 0) {
+                futureArr.forEach(r => {
+                    labels.push(r.date);
+                    hist.push(null);
+                    fore.push(r.forecast);
                 });
-            }
-
-            if (chartInstance) {
-                chartInstance.destroy();
             }
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [
                         {
-                            label: 'Historis (kWh)',
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            data: histData,
-                            tension: 0.3,
-                            fill: true
+                            label: 'Aktual (kWh)',
+                            data: hist,
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56,189,248,0.06)',
+                            borderWidth: 1.8,
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 2,
+                            pointHoverRadius: 5
                         },
                         {
-                            label: 'Prediksi Trend (kWh)',
-                            borderColor: '#f59e0b',
-                            borderDash: [5, 5],
-                            data: foreData,
-                            tension: 0.3
+                            label: 'Forecast DES (kWh)',
+                            data: fore,
+                            borderColor: '#fbbf24',
+                            borderDash: [5, 4],
+                            borderWidth: 1.8,
+                            tension: 0.35,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            fill: false
                         }
                     ]
                 },
@@ -187,51 +451,167 @@
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        tooltip: { backgroundColor: 'rgba(17, 24, 39, 0.9)', titleColor: '#fff', bodyColor: '#cbd5e1' }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1a1f2e',
+                            borderColor: 'rgba(255,255,255,0.08)',
+                            borderWidth: 1,
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#94a3b8',
+                            padding: 10,
+                            cornerRadius: 8
+                        },
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'x'
+                            },
+                            zoom: {
+                                wheel: { enabled: true },
+                                pinch: { enabled: true },
+                                mode: 'x'
+                            }
+                        }
                     },
                     scales: {
-                        x: { grid: { color: 'rgba(71, 85, 105, 0.2)' } },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                            ticks: { color: '#64748b', font: { size: 10 }, maxTicksLimit: 14 }
+                        },
                         y: {
-                            title: { display: true, text: 'Energi (kWh/Hari)', color: '#64748b' },
-                            grid: { color: 'rgba(71, 85, 105, 0.2)' }
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                            ticks: { color: '#64748b', font: { size: 10 } },
+                            title: { display: true, text: 'kWh / Hari', color: '#475569', font: { size: 11 } }
                         }
                     }
                 }
             });
         }
 
-        document.getElementById('predict-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses';
-            btn.disabled = true;
+        // ---- TABLE RENDER ----
+        function renderTable() {
+            const tbody = document.getElementById('table_body');
+            tbody.innerHTML = '';
 
-            const budget = document.getElementById('budget_input').value;
+            const totalPages = Math.max(1, Math.ceil(globalTableData.length / ROWS_PER_PAGE));
+            currentPage = Math.min(Math.max(currentPage, 1), totalPages);
 
-            const response = await window.api.fetch('/predict', {
-                method: 'POST',
-                body: JSON.stringify({ budget: budget })
-            });
+            document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
 
-            if (!response.error) {
-                document.getElementById('result-card').classList.remove('hidden');
-                document.getElementById('res_days').innerHTML = response.days + ' <span class="text-lg font-medium text-gray-500">Hari</span>';
-                document.getElementById('res_hours').textContent = response.hours + ' Jam';
-                document.getElementById('res_kwh').innerHTML = window.utils.formatNumber(response.target_kwh) + ' <span class="text-sm">kWh</span>';
-                document.getElementById('res_avg').innerHTML = window.utils.formatNumber(response.avg_kwh) + ' <span class="text-sm">kWh/hr</span>';
+            const slice = globalTableData.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
 
-                renderChart(response.history, response.forecast);
-
-                // scroll down on mobile
-                document.getElementById('result-card').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert("Gagal melakukan prediksi: " + response.message);
+            if (slice.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-600 italic py-10">Tidak ada data.</td></tr>`;
+                return;
             }
 
-            btn.innerHTML = originalText;
+            slice.forEach(r => {
+                const errColor = r.error < 0 ? 'text-red-400' : 'text-emerald-400';
+                const apeColor = r.ape > 20 ? 'text-yellow-400' : 'text-gray-300';
+                const isInit = r.ape === 0 && r.abs_error === 0;
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-gray-300 font-medium">${r.date}</td>
+                        <td class="text-right text-sky-300 font-semibold">${r.actual.toFixed(2)}</td>
+                        <td class="text-right text-amber-300">${r.forecast.toFixed(2)}</td>
+                        <td class="text-right ${errColor}">${isInit ? '<span class="text-gray-600">—</span>' : r.error.toFixed(2)}</td>
+                        <td class="text-right text-gray-300">${isInit ? '<span class="text-gray-600">—</span>' : r.abs_error.toFixed(2)}</td>
+                        <td class="text-right font-semibold ${apeColor}">${isInit ? '<span class="text-gray-600">—</span>' : r.ape.toFixed(2) + '%'}</td>
+                    </tr>`;
+            });
+        }
+
+        document.getElementById('prevPage').addEventListener('click', () => { currentPage--; renderTable(); });
+        document.getElementById('nextPage').addEventListener('click', () => { currentPage++; renderTable(); });
+
+        // ---- FORM SUBMIT ----
+        document.getElementById('filter-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('btn-submit');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch spinner"></i> Menghitung...';
+            btn.disabled = true;
+            document.getElementById('error-state').classList.add('hidden');
+
+            const period = document.getElementById('forecast_period').value;
+            const payload = {
+                forecast_period: period,
+                machine_id: document.getElementById('machine_id').value,
+                date_start: document.getElementById('date_start').value,
+                date_end: document.getElementById('date_end').value
+            };
+
+            const res = await window.api.fetch('/predict', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            btn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i> Hitung Prediksi';
             btn.disabled = false;
+
+            if (res.error) {
+                document.getElementById('error-message').textContent = res.message || 'Terjadi kesalahan tidak diketahui.';
+                document.getElementById('error-state').classList.remove('hidden');
+                return;
+            }
+
+            const s = res.stats;
+            const p = res.parameters;
+
+            // Update cards
+            document.getElementById('val_total_kwh').textContent = s.total_kwh_predicted + ' kWh';
+            document.getElementById('val_total_cost').textContent = 'Rp ' + Number(s.total_cost_predicted).toLocaleString('id-ID');
+            document.getElementById('val_avg_kwh').textContent = s.avg_kwh + ' kWh';
+            document.getElementById('val_training_count').textContent = p.total_training;
+            document.getElementById('val_period_label').textContent = periodLabels[period] || (period + ' hari');
+
+            // Trend
+            const trendEl = document.getElementById('val_trend');
+            const trendIcon = document.getElementById('trend_icon');
+            const trendBar = document.getElementById('trend_bar');
+            if (s.trend === 'Naik') {
+                trendEl.textContent = 'Meningkat';
+                trendEl.className = 'text-2xl font-bold text-red-400 mt-2';
+                trendIcon.className = 'fa-solid fa-arrow-trend-up text-red-400 text-xs';
+                trendBar.className = 'indicator-bar bg-red-600/40';
+            } else if (s.trend === 'Turun') {
+                trendEl.textContent = 'Menurun';
+                trendEl.className = 'text-2xl font-bold text-emerald-400 mt-2';
+                trendIcon.className = 'fa-solid fa-arrow-trend-down text-emerald-400 text-xs';
+                trendBar.className = 'indicator-bar bg-emerald-600/40';
+            } else {
+                trendEl.textContent = 'Stabil';
+                trendEl.className = 'text-2xl font-bold text-amber-400 mt-2';
+                trendIcon.className = 'fa-solid fa-minus text-amber-400 text-xs';
+                trendBar.className = 'indicator-bar bg-amber-600/40';
+            }
+
+            // Mape color
+            const mapeVal = s.mape;
+            let mapeText = mapeVal + '%';
+            let mapeClass = 'font-bold text-emerald-300';
+            if (mapeVal > 50) mapeClass = 'font-bold text-red-300';
+            else if (mapeVal > 20) mapeClass = 'font-bold text-yellow-300';
+            document.getElementById('param_mape').textContent = mapeText;
+            document.getElementById('param_mape').className = mapeClass;
+
+            // Parameters
+            document.getElementById('param_alpha').textContent = p.alpha;
+            document.getElementById('param_beta').textContent = p.beta;
+            document.getElementById('param_training').textContent = p.total_training + ' hari';
+
+            // Chart & Table
+            renderChart(res.table, res.future);
+            globalTableData = res.table;
+            currentPage = 1;
+            renderTable();
         });
+
+        // Auto-load on page open
+        setTimeout(() => document.getElementById('filter-form').dispatchEvent(new Event('submit')), 300);
     </script>
 </body>
 
