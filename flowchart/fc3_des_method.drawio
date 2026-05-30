@@ -1,0 +1,143 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- MULAI -->
+    <mxCell id="2" value="MULAI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="310" y="30" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Input Parameter -->
+    <mxCell id="3" value="Input Parameter (Mesin, Rentang Tanggal, Periode Prediksi)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="120" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Query Database -->
+    <mxCell id="4" value="Query Data kWh Harian dari Database" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="210" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Cek Data -->
+    <mxCell id="5" value="Jumlah Data Historis &gt;= 3?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="280" y="300" width="220" height="80" as="geometry"/>
+    </mxCell>
+
+    <!-- Error -->
+    <mxCell id="6" value="Tampil Pesan Error (Data Tidak Cukup)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="570" y="320" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- SELESAI ERROR -->
+    <mxCell id="13" value="SELESAI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="600" y="410" width="140" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="7" value="Inisialisasi: S1=X1, b1=X2-X1&#xa;Set alpha=0.1, beta=0.1, MAPE_best=Tak Terhingga" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="430" width="220" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="8" value="Hitung Rekursi DES (St dan bt) untuk Semua Data" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="540" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="9" value="Hitung Nilai Prediksi dan MAPE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="630" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- MAPE < best? -->
+    <mxCell id="10" value="MAPE &lt; MAPE_terbaik?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="280" y="720" width="220" height="80" as="geometry"/>
+    </mxCell>
+
+    <!-- Simpan best -->
+    <mxCell id="11" value="Simpan alpha*, beta*, MAPE* sebagai Parameter Terbaik" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="570" y="740" width="200" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- 81 Kombinasi Habis? -->
+    <mxCell id="12" value="Semua 81 Kombinasi Sudah Diuji?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="280" y="850" width="220" height="80" as="geometry"/>
+    </mxCell>
+
+    <!-- Lanjut kombinasi berikut -->
+    <mxCell id="14" value="Lanjut ke Kombinasi Berikutnya (alpha, beta)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="570" y="870" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Gunakan parameter optimal -->
+    <mxCell id="15" value="Gunakan Parameter Optimal (alpha*, beta*)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="990" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="16" value="Hitung Proyeksi m Hari ke Depan: Ft+m = St + bt * m" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="1080" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Tampil Hasil -->
+    <mxCell id="17" value="Tampilkan Hasil Prediksi (Grafik, Tabel, MAPE)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="1170" width="220" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- SELESAI UTAMA -->
+    <mxCell id="18" value="SELESAI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="310" y="1260" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- EDGES -->
+    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="2" target="3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="3" target="4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="4" target="5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 5→7 (Ya, cukup data) -->
+    <mxCell id="e4" value="Ya" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="5" target="7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 5→6 (Tidak, error) -->
+    <mxCell id="e5" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="5" target="6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 6→13 -->
+    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="6" target="13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="7" target="8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="8" target="9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="9" target="10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 10→11 (Ya, simpan best) -->
+    <mxCell id="e10" value="Ya" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="10" target="11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 10→12 (Tidak, lanjut cek kombinasi) -->
+    <mxCell id="e11" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="10" target="12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 11→12 (setelah simpan, ke cek apakah habis) -->
+    <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="11" target="12" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="670" y="950"/>
+          <mxPoint x="500" y="950"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- 12→15 (Ya, semua sudah diuji) -->
+    <mxCell id="e13" value="Ya" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="12" target="15" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 12→14 (Tidak, lanjut ke kombinasi berikutnya) -->
+    <mxCell id="e14" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="12" target="14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- 14→8 (loop balik ke hitung DES) -->
+    <mxCell id="e15" value="Loop Berikutnya" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="14" target="8" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="670" y="960"/>
+          <mxPoint x="200" y="960"/>
+          <mxPoint x="200" y="565"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="15" target="16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="16" target="17" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" source="17" target="18" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  </root>
+</mxGraphModel>

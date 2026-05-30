@@ -1,0 +1,714 @@
+SEMINAR HASIL
+
+RANCANG BANGUN SISTEM MONITORING DAN PREDIKSI KONSUMSI ENERGI LISTRIK BERBASIS IOT PADA INDUSTRI KONVEKSI
+
+
+
+
+
+Disusun Oleh : 
+MUHAMMAD ALTHOF ALI WAFA’
+22.18.032
+
+PROGRAM STUDI TEKNIK INFORMATIKA S-1 FAKULTAS TEKNOLOGI INDUSTRI INSTITUT TEKNOLOGI NASIONAL MALANG
+2026
+LEMBAR PENGESAHAN
+PENGAJUAN PROPOSAL SKRIPSI
+
+RANCANG BANGUN SISTEM MONITORING DAN PREDIKSI KONSUMSI ENERGI LISTRIK BERBASIS IOT PADA INDUSTRI KONVEKSI
+ 
+
+
+
+Disusun Oleh : 
+MUHAMMAD ALTHOF ALI WAFA’
+22.18.032
+Menyetujui 
+Dosen Keahlian 
+
+(Suryo Adi Wibowo, ST, MT) 
+NIP.Y. 1031100438
+
+PROGRAM STUDI TEKNIK INFORMATIKA S-1 FAKULTAS TEKNOLOGI INDUSTRI INSTITUT TEKNOLOGI NASIONAL MALANG
+2026
+KATA PENGANTAR 
+Dengan memanjatkan puji syukur kehadirat Allah SWT, karena atas berkah rahmat dan karunia-Nya sehingga penulis dapat menyelesaikan proposal skripsi ini. Proposal skripsi ini disusun sebagai salah satu syarat untuk mengerjakan skripsi pada program S-1 di Jurusan Teknik Informatika, Fakultas Teknologi Industri, Institut Teknologi Nasional Malang. 
+Terwujudnya penyusunan proposal ini, tentunya tidak lepas dari bantuanbantuan yang telah penulis terima. Pada kesempatan ini, kami menyampaikan terima kasih yang sebesar-besarnya kepada yang terhormat: 
+1. Bapak Yosep Agus Pranoto, ST, MT, selaku Ketua Program Studi Teknik Informatika S-1 ITN Malang. 
+2. Bapak Suryo Adi Wibowo, ST, MT, selaku Dosen Keahlian Prodi Teknik Informatika. 
+3. Rekan-rekan yang telah membantu dalam pelaksanaan dan penyusunan proposal skripsi ini. 
+Harapan penulis proposal skripsi ini bermanfaat bagi penulis sendiri maupun pembaca sekalian.
+
+
+
+
+
+
+
+DAFTAR ISI
+DAFTAR ISI	iii
+DAFTAR GAMBAR	vi
+BAB I PENDAHULUAN	1
+1.1 Latar Belakang	1
+1.2 Rumusan Masalah	2
+1.3 Batasan Masalah	2
+1.4 Tujuan Penelitian	3
+1.5 Manfaat Penelitian	3
+1.6 Metodologi Penelitian	4
+1.7 Sistematika Penulisan	5
+BAB II TINJAUAN PUSTAKA	6
+2.1 Penelitian Terdahulu	6
+2.2 IoT (Internet of Things)	7
+2.3 Konveksi	8
+2.4 Konsumsi Energi Listrik	8
+2.5 Time Series (Deret Waktu)	9
+2.6 Double Exponential Smoothing (DES)	10
+2.7 Mikrokontroler	10
+2.7.1 ESP32	10
+2.8 Sensor	12
+2.8.2 PZEM-004T	12
+2.9 Aktuator	13
+2.9.3 LCD 16x2 I2C	13
+2.9.4 RTC	14
+2.10 Framework	14
+2.10.5 Python	14
+2.10.6 Arduino IDE	15
+2.11 Database	16
+2.11.7 MySql	16
+2.12 Platform IoT dan Komunikasi	17
+2.12.8 Telegram	17
+2.13 Power Supply dan Perangkat Pendukung	17
+2.13.9 Adaptor 12V	17
+BAB III ANALISIS DAN PERANCANGAN	19
+3.1 Kebutuhan Fungsional	19
+3.2 Kebutuhan Non-Fungsional	20
+3.3 Blok Diagram Sistem	20
+3.4 Struktur Menu Admin	21
+3.5 Flowchart Website	22
+3.6 Flowchart Program	24
+3.7 Flowchart Metode Double Exponential Smoothing	25
+3.8 Rencana Desain Alat IoT	27
+3.9 Desain Antarmuka Dashboard	27
+3.9.1 Login	27
+3.9.2 Dashboard Admin	28
+3.9.3 Monitoring Kelistrikan	28
+3.9.4 Proyeksi Anggaran	29
+3.9.5 Riwayat	29
+3.9.6 Log Sistem	30
+3.9.7 Notifikasi	30
+3.9.8 Pengaturan	31
+3.10 Rangkaian Wiring	32
+3.10.9 Gambar Wiring Diagram	32
+3.11 Tabel Wiring	34
+BAB IV PROGRESS YANG TELAH DILAKUKAN	35
+4.1 Hasil yang sudah dilakukan	35
+4.2 Tampilan alat yang telah di buat	36
+4.3 Tampilan Web	36
+4.4 Tampilan Telegram	38
+4.5 Kendala yang dihadapi	39
+4.6 Rencana Penyelesaian Masalah	40
+DAFTAR PUSTAKA	41
+
+DAFTAR GAMBAR
+Gambar 2.1 Tampilan Ikon IOT	8
+Gambar 2.2 Tampilan Konveksi	8
+Gambar 2.3 Ilustrasi Listrik	9
+Gambar 2.4 Tampilan Mikrokontroler ESP32	11
+Gambar 2.5 Tampilan Sensor PZEM-004T	12
+Gambar 2.6 Tampilan LCD i2c	13
+Gambar 2.7 Tampilan RTC	14
+Gambar 2.8 Tampilan Framework Python	15
+Gambar 2.9 Tampilan Ikon Arduino IDE	15
+Gambar 2.10 Tampilan Database MySQL	16
+Gambar 2.11 Tampilan Ikon Telegram	17
+Gambar 2.12 Tampilan Adaptor 5V	18
+Gambar 3.1 Gambar Blok Diagram	21
+Gambar 3.2 Struktur Menu Admin	22
+Gambar 3.3 Flowchart Website	23
+Gambar 3.4 Flowchart Program	24
+Gambar 3.5 Flowchart Metode	26
+Gambar 3.6 Tampilan Rencana Desain IoT	27
+Gambar 3.7 Halaman Login	28
+Gambar 3.8 Halaman Dashboard	28
+Gambar 3.9 Halaman Monitoring Kelistrikan	29
+Gambar 3.10 Halaman Prediksi kwh	29
+Gambar 3.11 Halaman Riwayat	30
+Gambar 3.12 Halaman Log Sistem	30
+Gambar 3.13 Halaman Notifikasi	31
+Gambar 3.14 Halaman Pengaturan	31
+Gambar 3.15 Wiring Project	32
+Gambar 4.1 Tampilan Alat Monitoring Listrik	36
+Gambar 4.2 Tampilan Dashboard web	36
+Gambar 4.3 Tampilan Monitoring web	36
+Gambar 4.4 Tampilan Riwayat Data web	37
+Gambar 4.5 Tampilan Prediksi Kwh web	37
+Gambar 4.6 Tampilan Log sistem web	37
+Gambar 4.7 Tampilan Notifikasi web	38
+Gambar 4.8 Tampilan Pengaturan web	38
+Gambar 4.9 Tampilan BOT Telegram	38
+
+
+DAFTAR TABEL
+Tabel 2.1 Pin ESP32	11
+Tabel 2.2 Pin PZEM 004T	12
+Tabel 2.3 Pin LCD I2C	13
+Tabel 2.4 Pin RTC	14
+Tabel 3.5 Kebutuhan Fungsional	19
+Tabel 3.6 Kebutuhan Non-Fungsional	20
+Tabel 3.7 Wiring PZEM 004T 1	34
+Tabel 3.8 Wiring PZEM 004T 2	34
+Tabel 3.9 Wiring LCD I2C	34
+Tabel 3.10 RTC (DS3231)	34
+
+
+PENDAHULUAN
+Latar Belakang 
+Industri konveksi merupakan salah satu sektor usaha yang berperan penting dalam mendukung perekonomian Indonesia, khususnya pada skala Industri Kecil dan Menengah (IKM)[1]. Dalam industri konveksi, konsumsi energi listrik menjadi isu penting karena mesin jahit sebagai alat produksi utama berkontribusi besar terhadap penggunaan listrik. Selain itu, tingginya konsumsi listrik selama operasional menjadikan biaya energi sebagai komponen penting dalam analisis ekonomi usaha konveksi.
+Namun, dalam praktiknya, sebagian besar pelaku usaha konveksi masih belum memiliki sistem yang mampu memantau penggunaan energi listrik secara real-time dan terstruktur[2]. Pemantauan konsumsi listrik umumnya hanya dilakukan berdasarkan tagihan bulanan dari penyedia listrik, sehingga pemilik usaha tidak dapat mengetahui secara detail pola penggunaan energi harian maupun sumber pemborosan energi yang terjadi. Kondisi ini menyebabkan kesulitan dalam melakukan evaluasi efisiensi energi serta perencanaan biaya operasional secara lebih akurat[3].
+Selain itu, belum tersedianya sistem prediksi konsumsi energi listrik menyebabkan pelaku usaha kesulitan memperkirakan kebutuhan energi di periode mendatang. Kondisi ini berdampak pada kurang optimalnya penyusunan anggaran biaya listrik dan pengelolaan operasional. Padahal, penelitian menunjukkan bahwa model prediksi konsumsi energi dapat digunakan untuk mendukung perencanaan sumber daya, efisiensi energi, dan pengambilan keputusan operasional yang lebih baik[4].
+Perkembangan teknologi Internet of Things (IoT) memberikan solusi terhadap permasalahan tersebut melalui kemampuan integrasi antara perangkat keras dan sistem berbasis internet. Dengan memanfaatkan mikrokontroler seperti ESP32 serta sensor energi listrik seperti PZEM-004T, sistem monitoring dapat dibangun untuk mengukur parameter kelistrikan seperti tegangan, arus, daya, dan energi secara real-time[5].
+Untuk meningkatkan fungsi sistem tidak hanya sebagai monitoring, diperlukan metode analisis data yang mampu melakukan prediksi konsumsi energi listrik. Salah satu metode yang dapat digunakan adalah Double Exponential Smoothing (DES), yang merupakan metode peramalan berbasis data deret waktu (time series) dengan mempertimbangkan unsur tren. Metode ini mampu memberikan hasil prediksi yang lebih akurat dibandingkan metode rata-rata sederhana, terutama pada data yang memiliki kecenderungan naik atau turun[6].
+Berdasarkan permasalahan tersebut, penelitian ini bertujuan untuk merancang dan membangun sistem monitoring serta prediksi konsumsi energi listrik berbasis IoT pada industri konveksi. Sistem ini diharapkan dapat membantu pelaku usaha dalam memantau penggunaan energi secara real-time sekaligus memperoleh estimasi konsumsi energi di masa mendatang, sehingga dapat meningkatkan efisiensi penggunaan energi dan perencanaan biaya operasional.
+Rumusan Masalah
+Berdasarkan latar belakang yang telah diuraikan, permasalahan utama yang diangkat dalam penelitian ini adalah :
+Bagaimana merancang sistem monitoring konsumsi energi listrik berbasis Internet of Things menggunakan ESP32 dan sensor PZEM-004T?
+Bagaimana mengimplementasikan metode Double Exponential Smoothing (DES) untuk melakukan prediksi konsumsi energi listrik?
+Bagaimana menyajikan data monitoring dan hasil prediksi konsumsi energi listrik dalam bentuk dashboard yang dapat diakses secara real-time?
+Batasan Masalah
+Agar penelitian ini lebih terfokus dan dapat diselesaikan dengan baik, maka ditetapkan batasan-batasan sebagai berikut:
+Sistem hanya difokuskan pada monitoring dan prediksi konsumsi energi listrik tanpa fitur kontrol beban.
+Perangkat keras yang digunakan meliputi mikrokontroler ESP32, dua buah sensor PZEM-004T, dan adaptor 5V sebagai catu daya.
+Parameter yang diukur meliputi tegangan (Volt), arus (Ampere), daya (Watt), energi listrik (kWh), frekuensi (Hz) dan faktor daya.
+Metode prediksi yang digunakan adalah Double Exponential Smoothing (DES).
+Data monitoring dan hasil prediksi ditampilkan melalui web dashboard berbasis IoT.
+Tujuan Penelitian
+Tujuan dari penelitian ini adalah untuk :
+Merancang dan membangun sistem monitoring konsumsi energi listrik berbasis IoT menggunakan ESP32 dan sensor PZEM-004T.
+Mengimplementasikan metode Double Exponential Smoothing (DES) untuk memprediksi konsumsi energi listrik.
+Menghasilkan sistem yang mampu menampilkan data monitoring dan hasil prediksi secara real-time melalui dashboard.
+Manfaat Penelitian
+Penelitian ini diharapkan dapat memberikan manfaat sebagai berikut :
+Membantu pemilik usaha konveksi dalam memantau konsumsi energi listrik secara real-time sehingga dapat mengetahui penggunaan listrik pada proses produksi secara lebih detail.
+Memberikan informasi prediksi konsumsi energi listrik di masa mendatang menggunakan metode Double Exponential Smoothing (DES), sehingga dapat digunakan sebagai dasar dalam perencanaan anggaran biaya listrik bulanan.
+Meningkatkan efisiensi penggunaan energi listrik pada industri konveksi dengan menyediakan data historis dan analisis pola konsumsi energi yang dapat dijadikan bahan evaluasi.
+Mempermudah pemilik usaha dalam mengakses informasi konsumsi energi listrik melalui sistem berbasis Internet of Things (IoT) tanpa perlu melakukan pencatatan manual.
+
+Metodologi Penelitian
+Penelitian ini akan dilaksanakan dengan metodologi berikut:
+Studi Literatur
+Pada tahap ini dilakukan pengumpulan dan studi referensi dari berbagai sumber seperti jurnal ilmiah, buku, dan artikel terkait Internet of Things (IoT), mikrokontroler ESP32, sensor PZEM-004T, serta metode Double Exponential Smoothing (DES). Studi literatur bertujuan untuk memperoleh dasar teori yang mendukung perancangan sistem.
+Perancangan Sistem
+Tahap ini meliputi perancangan perangkat keras dan perangkat lunak. Perangkat keras dirancang dengan mengintegrasikan ESP32 dengan dua sensor PZEM-004T sebagai pembaca parameter listrik. Perangkat lunak dirancang untuk mengolah data hasil pembacaan sensor serta menampilkan data pada dashboard berbasis web. Selain itu, dirancang pula algoritma prediksi menggunakan metode Double Exponential Smoothing (DES).
+Implementasi dan Pembuatan Prototipe
+Pada tahap ini dilakukan realisasi dari rancangan sistem menjadi sebuah prototype. Komponen perangkat keras dirakit sesuai desain, kemudian dilakukan pemrograman ESP32 agar mampu membaca data dari sensor PZEM-004T dan mengirimkannya ke server atau database melalui jaringan internet.
+Pengujian dan Analisis
+Tahap pengujian dilakukan untuk mengetahui kinerja sistem yang telah dibuat. Pengujian meliputi akurasi pembacaan sensor PZEM-004T, kestabilan pengiriman data, serta evaluasi hasil prediksi menggunakan metode Double Exponential Smoothing (DES). Hasil pengujian kemudian dianalisis untuk mengetahui tingkat keberhasilan sistem.
+Pelaporan
+Tahap akhir adalah penyusunan laporan penelitian yang mencakup seluruh proses mulai dari perancangan, implementasi, hingga hasil pengujian.
+
+Sistematika Penulisan
+Untuk mempermudah pemahaman pembahasan dalam skripsi ini, sistematika penulisan disusun sebagai berikut:
+BAB I PENDAHULUAN :
+Berisi latar belakang, rumusan masalah, batasan masalah, tujuan penelitian, manfaat penelitian, metodologi penelitian, dan sistematika penulisan.
+BAB II TINJAUAN PUSTAKA :
+Berisi teori-teori pendukung seperti Internet of Things (IoT), ESP32, sensor PZEM-004T, serta metode Double Exponential Smoothing (DES) dan penelitian terdahulu yang relevan.
+BAB III ANALISIS DAN PERANCANGAN :
+Berisi analisis kebutuhan sistem, perancangan arsitektur sistem, perancangan perangkat keras dan perangkat lunak, serta perancangan algoritma prediksi.
+BAB IV IMPLEMENTASI DAN PENGUJIAN :
+Berisi hasil implementasi sistem, pengujian alat, serta analisis hasil monitoring dan prediksi.
+BAB V KESIMPULAN DAN SARAN
+Berisi kesimpulan dari penelitian serta saran untuk pengembangan selanjutnya.
+
+
+TINJAUAN PUSTAKA
+Penelitian Terdahulu
+Penelitian mengenai sistem monitoring energi listrik berbasis Internet of Things (IoT) telah banyak dilakukan sebagai upaya meningkatkan efisiensi penggunaan energi. Salah satu penelitian oleh Asyhar dan Ahmad merancang sistem monitoring penggunaan daya listrik berbasis IoT menggunakan ESP32 dan sensor PZEM-004T yang mampu menampilkan parameter kelistrikan secara real-time melalui aplikasi Telegram. Hasil penelitian menunjukkan bahwa sistem mampu memberikan informasi konsumsi listrik secara akurat dan membantu pengguna dalam memahami pola penggunaan energi[7].
+Penelitian lain oleh Purjianto, Nurchim, dan Faiq mengembangkan sistem monitoring energi listrik berbasis IoT menggunakan ESP32 dan sensor PZEM-004T yang terintegrasi dengan dashboard berbasis web. Sistem ini mampu menampilkan data tegangan, arus, daya, dan energi secara real-time sehingga memudahkan pengguna dalam melakukan pemantauan konsumsi energi listrik[8].
+Selain itu, penelitian oleh I Made Sumerta Yasa dkk. mengembangkan sistem monitoring energi listrik menggunakan sensor PZEM-004T yang terintegrasi dengan mikrokontroler. Hasil pengujian menunjukkan bahwa sensor memiliki tingkat akurasi yang baik dalam membaca parameter kelistrikan sehingga dapat digunakan sebagai solusi monitoring energi listrik[5].
+Di sisi lain, penelitian mengenai metode prediksi konsumsi energi listrik menunjukkan bahwa pendekatan berbasis time series seperti Double Exponential Smoothing (DES) mampu memberikan hasil prediksi yang cukup akurat, terutama pada data yang memiliki pola tren. Metode ini memperhitungkan komponen level dan tren sehingga hasil prediksi lebih representatif dibandingkan metode sederhana[6].
+Berdasarkan beberapa penelitian tersebut, dapat disimpulkan bahwa penggunaan ESP32 dan sensor PZEM-004T telah terbukti efektif dalam sistem monitoring energi listrik[9]. Namun, sebagian besar penelitian masih berfokus pada monitoring dan kontrol beban, sedangkan penelitian yang mengintegrasikan sistem monitoring dengan metode prediksi konsumsi energi listrik berbasis Double Exponential Smoothing pada industri konveksi masih terbatas. Oleh karena itu, penelitian ini bertujuan untuk mengembangkan sistem monitoring dan prediksi konsumsi energi listrik berbasis IoT dengan metode DES untuk meningkatkan efisiensi energi dan perencanaan biaya operasional.
+IoT (Internet of Things)
+Secara mendasar, Internet of Things (IoT) merupakan suatu konsep teknologi yang menggambarkan keterhubungan berbagai perangkat fisik melalui jaringan internet sehingga perangkat-perangkat tersebut mampu saling berkomunikasi dan bertukar data secara otomatis. Dalam sistem IoT, objek-objek fisik seperti sensor, aktuator, maupun perangkat elektronik lainnya dibekali dengan kemampuan komputasi dan konektivitas, sehingga dapat mengirimkan, menerima, serta memproses informasi tanpa harus selalu melibatkan campur tangan manusia secara langsung. Data yang diperoleh dari lingkungan nyata misalnya suhu, kelembapan, arus listrik, atau pergerakan akan dikumpulkan oleh sensor, kemudian dikirimkan melalui jaringan internet ke sistem pemrosesan, baik itu server lokal maupun cloud. Informasi tersebut selanjutnya dapat dianalisis secara real-time untuk menghasilkan keputusan, notifikasi, atau tindakan tertentu secara otomatis. Dengan demikian, IoT tidak hanya berfungsi sebagai media pemantauan, tetapi juga memungkinkan adanya sistem kontrol yang responsif dan efisien[10].
+
+
+
+
+
+Tampilan Ikon IOT
+Konveksi
+Sektor industri tekstil dan produk tekstil, khususnya dalam skala kecil, dan menengah, memegang peranan vital dalam struktur ekonomi nasional Indonesia. Industri konveksi, sebagai representasi utama dari manufaktur pakaian jadi yang bersifat padat karya, bukan sekadar unit bisnis penyedia sandang, melainkan instrumen pemerataan ekonomi dan penyerapan tenaga kerja di tingkat akar rumput. Dinamika industri ini sangat dipengaruhi oleh perubahan regulasi, kemajuan teknologi informasi, serta pergeseran perilaku konsumen global yang menuntut kecepatan produksi dan fleksibilitas desain. Penulisan ini bertujuan untuk membedah secara mendalam ekosistem konveksi skala kecil dan menengah dengan mengacu pada berbagai studi ilmiah dan data regulasi terkini[11].
+
+Tampilan Konveksi
+Konsumsi Energi Listrik
+Energi listrik merupakan salah satu bentuk energi yang paling banyak digunakan dalam kegiatan industri, termasuk industri konveksi yang bergantung pada berbagai peralatan listrik seperti mesin jahit, mesin obras, dan setrika uap. Konsumsi energi listrik umumnya dinyatakan dalam satuan kilowatt-hour (kWh), yang merupakan hasil perkalian antara daya listrik (kW) dan waktu penggunaan (jam). Tingginya konsumsi energi listrik dapat berdampak langsung pada peningkatan biaya operasional, sehingga diperlukan suatu sistem yang mampu memantau penggunaan energi secara detail dan berkelanjutan. Dengan adanya sistem monitoring yang baik, pengguna dapat mengetahui pola konsumsi energi listrik serta melakukan pengelolaan penggunaan energi secara lebih efisien dan terkontrol[12].
+
+Ilustrasi Listrik
+Time Series (Deret Waktu)
+Time series atau deret waktu merupakan kumpulan data yang disusun berdasarkan urutan waktu tertentu dan digunakan untuk analisis serta peramalan suatu fenomena. Analisis deret waktu memang menekankan data yang berurutan menurut waktu, serta digunakan untuk memahami perkembangan fenomena dari waktu ke waktu. Data time series juga memiliki karakteristik seperti tren dan fluktuasi, sehingga cocok digunakan untuk melihat pola perubahan nilai dalam periode tertentu. Dalam penelitian ini, data konsumsi energi listrik yang dikumpulkan secara berkala dapat dijadikan data historis untuk proses prediksi menggunakan metode Double Exponential Smoothing, karena metode ini memang digunakan untuk peramalan data deret waktu, termasuk kebutuhan atau konsumsi energi listrik[13].
+Double Exponential Smoothing (DES)
+Double Exponential Smoothing (DES) merupakan metode peramalan yang digunakan untuk data time series yang memiliki pola tren dan merupakan pengembangan dari metode Single Exponential Smoothing dengan menambahkan komponen tren dalam perhitungannya. Metode ini bekerja dengan menggunakan dua komponen utama, yaitu level yang merepresentasikan nilai dasar dari data, serta trend yang menunjukkan kecenderungan perubahan data dari waktu ke waktu. Dengan mempertimbangkan kedua komponen tersebut, metode DES mampu menghasilkan prediksi yang lebih akurat dibandingkan metode peramalan sederhana, terutama pada data yang mengalami peningkatan atau penurunan secara bertahap. Oleh karena itu, metode Double Exponential Smoothing digunakan dalam penelitian ini untuk memprediksi konsumsi energi listrik berdasarkan data historis yang diperoleh dari hasil monitoring system[6].
+Konsep Metode DES
+Metode DES bekerja dengan mempertimbangkan dua komponen utama dalam data time series, yaitu:
+Level (St)
+Level merupakan nilai dasar data pada waktu ke-t yang menunjukkan kondisi konsumsi energi listrik saat itu.
+Trend (bt)
+Trend merupakan kecenderungan perubahan data dari waktu ke waktu, baik mengalami peningkatan maupun penurunan.
+Dengan memanfaatkan kedua komponen tersebut, metode DES mampu menghasilkan prediksi yang lebih representatif terhadap pola konsumsi energi listrik pada industri konveksi. Pada penelitian ini, metode DES dipilih karena data konsumsi energi listrik memiliki pola perubahan penggunaan yang dipengaruhi oleh aktivitas operasional mesin produksi, sehingga data cenderung memiliki unsur tren.
+
+Persamaan Matematis DES
+Perhitungan metode Double Exponential Smoothing menggunakan beberapa persamaan berikut:
+Perhitungan Level
+Perhitungan Trend
+Perhitungan Prediksi
+Keterangan :
+ = data aktual pada waktu ke-t
+​ = nilai level
+ = nilai tren
+​ = hasil prediksi ke depan
+ = parameter smoothing level (0–1)
+ = parameter smoothing trend (0–1)
+ = periode prediksi
+Parameter α dan β merupakan nilai pembobot yang digunakan dalam proses smoothing data. Nilai α digunakan untuk mengatur pengaruh data terbaru terhadap komponen level, sedangkan β digunakan untuk mengatur perubahan tren data. Pemilihan nilai parameter yang tepat akan mempengaruhi tingkat akurasi hasil prediksi konsumsi energi listrik.
+Tahapan Perhitungan DES
+Langkah-langkah dalam metode Double Exponential Smoothing adalah sebagai berikut:
+Menentukan nilai awal level dan tren:
+ ​= ​
+ ​= 
+Menghitung nilai level (​) untuk setiap periode menggunakan data aktual.
+Menghitung nilai tren (​) berdasarkan perubahan level.
+Melakukan iterasi perhitungan hingga seluruh data historis selesai diproses.
+Menghitung nilai prediksi menggunakan nilai level dan tren terakhir.
+Melakukan pengujian parameter α dan β menggunakan metode trial and error sebanyak 81 kombinasi untuk mendapatkan nilai prediksi terbaik.
+Penerapan DES pada Penelitian
+Dalam penelitian ini, metode Double Exponential Smoothing digunakan untuk memprediksi konsumsi energi listrik harian, mingguan, dan bulanan berdasarkan data historis penggunaan energi listrik dari mesin bordir dan mesin jahit pada industri konveksi. Data historis diperoleh dari hasil monitoring sensor PZEM-004T yang dikirimkan oleh ESP32 ke database secara real-time.
+Memperkirakan konsumsi energi listrik pada periode berikutnya.
+Membantu pemilik usaha dalam memperkirakan biaya operasional listrik.
+meningkatkan efisiensi penggunaan energi listrik pada industri konveksi
+Evaluasi Hasil Prediksi
+Tingkat akurasi hasil prediksi dievaluasi menggunakan metode Mean Absolute Percentage Error (MAPE).
+Semakin kecil nilai MAPE yang dihasilkan, maka tingkat akurasi metode prediksi semakin baik. Pada penelitian ini, nilai parameter α dan β terbaik dipilih berdasarkan hasil trial and error yang menghasilkan nilai MAPE terkecil sehingga model prediksi yang digunakan dapat memberikan hasil forecasting yang lebih optimal.
+
+
+Parameter Energi Listrik
+Parameter energi listrik merupakan besaran yang digunakan untuk menggambarkan kondisi penggunaan energi listrik pada sistem monitoring industri konveksi. Parameter-parameter ini digunakan sebagai dasar dalam proses monitoring, analisis konsumsi energi, serta pengolahan data untuk proses prediksi menggunakan metode Double Exponential Smoothing (DES).
+Tegangan (Voltage)
+Tegangan merupakan beda potensial listrik yang menyebabkan arus dapat mengalir pada rangkaian listrik. Parameter ini digunakan untuk memantau kestabilan sumber listrik PLN (V).
+Arus (Current)
+Arus listrik menunjukkan besarnya aliran listrik yang digunakan oleh mesin selama beroperasi. Semakin besar arus, maka konsumsi daya listrik juga semakin meningkat. Satuan arus adalah Ampere (A).
+Daya (Power)
+Daya merupakan besaran yang menunjukkan jumlah energi listrik yang digunakan dalam satuan waktu tertentu. Parameter ini digunakan untuk mengetahui konsumsi listrik mesin secara real-time. Satuan daya adalah Watt (W).
+Energi Listrik (Energy)
+Energi listrik merupakan akumulasi penggunaan daya dalam periode waktu tertentu. Parameter ini menjadi data utama dalam proses prediksi konsumsi energi listrik menggunakan metode DES. Satuan energi adalah kilowatt-hour (kWh).
+Frekuensi (Frequency)
+Frekuensi menunjukkan jumlah gelombang listrik AC dalam satu detik. Parameter ini digunakan untuk memantau kestabilan sistem kelistrikan. Satuan frekuensi adalah Hertz (Hz).
+
+
+Power Factor (PF)
+Power Factor atau faktor daya merupakan perbandingan antara daya aktif dan daya semu. Parameter ini digunakan untuk mengetahui tingkat efisiensi penggunaan energi listrik pada mesin.
+Mikrokontroler
+ESP32
+ESP32 merupakan sebuah mikrokontroler yang dirancang dengan arsitektur System on Chip, yaitu sistem terintegrasi dalam satu chip yang mencakup prosesor, memori, serta berbagai fitur komunikasi. Perangkat ini dikenal memiliki kinerja yang cukup tinggi dibandingkan generasi sebelumnya, namun tetap ditawarkan dengan harga yang relatif terjangkau serta konsumsi daya yang efisien. Kombinasi antara performa, efisiensi energi, dan biaya produksi yang rendah menjadikan ESP32 sangat populer dalam pengembangan berbagai sistem elektronik modern. ESP32 dikembangkan oleh perusahaan Espressif Systems sebagai generasi lanjutan dari ESP8266 dengan peningkatan spesifikasi yang signifikan, baik dari sisi kecepatan pemrosesan, jumlah General Purpose Input Output (GPIO), maupun fitur komunikasi. Salah satu keunggulan utama ESP32 adalah kemampuannya dalam mendukung konektivitas nirkabel secara langsung tanpa memerlukan modul tambahan, karena telah dilengkapi dengan modul WiFi berfrekuensi 2,4 GHz. Dalam penelitian ini, ESP32 berfungsi sebagai pusat pengendali yang membaca data dari sensor PZEM-004T serta mengirimkan data tersebut ke server melalui jaringan internet untuk keperluan monitoring dan prediksi konsumsi energi listrik[14].
+ Pin ESP32
+
+Tampilan Mikrokontroler ESP32
+
+
+Sensor
+PZEM-004T
+PZEM-004T merupakan modul sensor yang digunakan untuk mengukur berbagai parameter kelistrikan pada sistem satu fasa (single phase). Sensor ini mampu membaca nilai tegangan (volt), arus (ampere), daya (watt), energi listrik (kWh atau Wh), frekuensi (Hz), serta faktor daya (power factor) secara langsung dari jaringan listrik AC. Dengan kemampuannya tersebut, PZEM-004T banyak dimanfaatkan dalam sistem monitoring energi listrik karena dapat memberikan data pengukuran yang cukup lengkap dalam satu modul. Dalam implementasinya, PZEM-004T dihubungkan dengan mikrokontroler seperti ESP32 melalui komunikasi serial untuk mengirimkan data hasil pengukuran. Data tersebut kemudian dapat ditampilkan secara real-time maupun disimpan ke dalam database untuk keperluan analisis dan prediksi. Berdasarkan hasil pengujian, sensor ini memiliki kinerja yang stabil serta tingkat akurasi yang baik dalam membaca parameter listrik, sehingga dapat dijadikan solusi yang efektif dalam sistem monitoring konsumsi energi listrik berbasis Internet of Things (IoT)[15].
+ Pin PZEM 004T
+
+Tampilan Sensor PZEM-004T
+
+Aktuator
+LCD 16x2 I2C
+LCD I2C 16×2 merupakan salah satu komponen output yang digunakan untuk menampilkan informasi berupa teks atau angka pada sistem berbasis mikrokontroler. LCD ini dapat menampilkan 16 karakter pada dua baris sehingga cukup efektif untuk menampilkan berbagai informasi sederhana seperti nilai sensor atau status sistem. Berbeda dengan LCD 16×2 biasa yang menggunakan banyak pin, versi I2C hanya memerlukan dua jalur komunikasi yaitu SDA dan SCL, sehingga penggunaan pin pada mikrokontroler menjadi lebih hemat dan rangkaian lebih sederhana. Pada penerapannya dengan mikrokontroler seperti Arduino Uno atau ESP32, LCD ini sering dimanfaatkan sebagai media tampilan untuk membantu pengguna melihat data atau kondisi perangkat secara langsung. Selain itu, LCD I2C 16×2 juga cukup mudah digunakan karena tersedia banyak pustaka (library) yang dapat mempermudah proses pemrograman, sehingga komponen ini sering digunakan dalam berbagai proyek elektronika dan sistem monitoring berbasis mikrokontroler[10].
+ Pin LCD I2C
+
+Tampilan LCD i2c
+
+RTC
+RTC merupakan modul yang digunakan untuk menyediakan informasi waktu secara akurat dalam sistem. Modul ini mampu menyimpan data waktu seperti jam, menit, detik, tanggal, dan tahun, sehingga dapat digunakan sebagai penanda waktu (timestamp) pada setiap data yang diambil. Dalam sistem ini, RTC digunakan untuk memberikan informasi waktu pada data hasil monitoring energi listrik. Dengan adanya RTC, setiap data yang dikirim ke server dapat dilengkapi dengan waktu pengambilan data sehingga memudahkan dalam proses penyimpanan, analisis, dan prediksi konsumsi energi listrik berdasarkan data historis[16].
+ Pin RTC
+
+Tampilan RTC
+Framework
+Python
+Python merupakan salah satu bahasa pemrograman tingkat tinggi yang banyak digunakan dalam pengembangan aplikasi berbasis data dan Internet of Things (IoT) karena memiliki sintaks yang sederhana serta mudah dipahami. Bahasa pemrograman ini menyediakan berbagai library yang mendukung pengolahan data, analisis statistik, serta implementasi algoritma prediksi seperti Double Exponential Smoothing (DES). Dalam penelitian ini, Python digunakan untuk membantu proses pengolahan data konsumsi energi listrik serta melakukan perhitungan prediksi berdasarkan data historis yang telah dikumpulkan. Dengan dukungan library yang lengkap dan kemampuan integrasi dengan berbagai sistem, Python menjadi pilihan yang efektif dalam membangun sistem analisis data yang akurat dan efisien.
+
+Tampilan Framework Python
+Arduino IDE
+Arduino IDE merupakan perangkat lunak yang digunakan sebagai lingkungan pemrograman untuk mengembangkan sistem berbasis mikrokontroler Arduino. Aplikasi ini dibuat menggunakan bahasa Java sehingga dapat dijalankan di berbagai sistem operasi seperti Windows, macOS, dan Linux. Di dalamnya tersedia editor teks untuk menulis serta mengedit kode program, area pesan untuk menampilkan informasi proses kompilasi, dan konsol yang membantu pengguna mengetahui jika terdapat kesalahan pada kode yang ditulis. Selain itu, Arduino IDE juga menyediakan menu dan tombol sederhana untuk melakukan proses verifikasi serta mengunggah program langsung ke papan mikrokontroler melalui koneksi USB. Tampilan antarmuka Arduino IDE dirancang sederhana dan mudah dipahami, sehingga cocok digunakan oleh pemula maupun pengguna yang sudah berpengalaman [17].
+
+Tampilan Ikon Arduino IDE
+
+Database
+MySql
+MySQL merupakan salah satu sistem manajemen basis data yang menggunakan Structured Query Language (SQL) sebagai bahasa utama untuk mengelola dan memanipulasi data. Sistem ini banyak digunakan dalam pengembangan aplikasi berbasis web karena mampu menyimpan, mengatur, serta mengambil data dengan struktur yang terorganisir. MySQL dirancang agar dapat bekerja secara stabil dalam berbagai skala kebutuhan, mulai dari aplikasi sederhana hingga sistem informasi yang memiliki jumlah pengguna dan data yang cukup besar. Salah satu keunggulan utama MySQL adalah kemampuannya dalam memproses akses data dengan cepat serta penggunaan yang relatif mudah dipahami oleh pengembang. Selain itu, MySQL juga mampu menangani data dalam jumlah besar secara efisien tanpa mengurangi performa sistem secara signifikan. Dukungan komunitas yang luas serta kompatibilitasnya dengan berbagai bahasa pemrograman menjadikan MySQL sebagai pilihan yang populer dalam pembangunan sistem informasi berbasis web[18].
+
+Tampilan Database MySQL
+
+
+
+
+Platform IoT dan Komunikasi
+Telegram
+Telegram merupakan aplikasi pesan instan berbasis cloud yang memungkinkan pengguna untuk berkomunikasi secara cepat melalui jaringan internet. Selain sebagai media komunikasi, Telegram juga menyediakan fitur Application Programming Interface (API) yang dapat digunakan untuk mengembangkan Bot sebagai perantara antara sistem dan pengguna. Dalam sistem berbasis Internet of Things (IoT), Bot Telegram dapat dimanfaatkan sebagai media notifikasi untuk menyampaikan informasi hasil monitoring secara real-time. Ketika sistem menerima data dari sensor, informasi tersebut dapat dikirimkan kepada pengguna melalui Bot Telegram sehingga pengguna dapat memantau kondisi sistem dari jarak jauh tanpa harus mengakses dashboard secara langsung. Kemudahan integrasi, kecepatan pengiriman pesan, serta tingkat keamanan yang baik menjadikan Telegram sebagai solusi yang efektif dalam sistem monitoring berbasis IoT[10].
+
+Tampilan Ikon Telegram
+Power Supply dan Perangkat Pendukung
+Adaptor 12V
+Dalam bidang elektronika, istilah adaptor maupun catu daya (power supply) umumnya digunakan untuk menyebut perangkat yang berfungsi sebagai pengubah energi listrik atau electric power converter. Perangkat ini berperan penting dalam memastikan suatu rangkaian atau peralatan elektronik memperoleh suplai tegangan yang sesuai dengan kebutuhannya. Pada dasarnya, setiap perangkat elektronik memiliki spesifikasi tegangan dan arus tertentu, sehingga diperlukan suatu sistem yang mampu menyesuaikan sumber listrik dari jaringan utama agar aman dan stabil saat digunakan. Secara teknis, catu daya dapat dipahami sebagai perangkat yang menyediakan sumber tegangan bagi beban listrik dengan cara mengonversi tingkat tegangan yang tersedia menjadi tegangan yang dibutuhkan. Proses konversi ini umumnya melibatkan perubahan dari arus bolak-balik (AC) menjadi arus searah (DC), terutama karena sebagian besar rangkaian elektronik bekerja menggunakan tegangan DC yang lebih stabil[19].
+
+Tampilan Adaptor 5V
+
+
+ANALISIS DAN PERANCANGAN
+Kebutuhan Fungsional
+ Kebutuhan Fungsional
+
+
+Kebutuhan Non-Fungsional
+ Kebutuhan Non-Fungsional
+Blok Diagram Sistem
+Sistem monitoring dan prediksi konsumsi energi listrik ini ditenagai oleh sumber PLN yang tegangannya disesuaikan menggunakan adaptor 5V agar dapat menyuplai mikrokontroler ESP32 secara stabil. Sebagai pusat pengendali utama, ESP32 bertugas mengolah seluruh data masukan (input) yang diperoleh dari sensor serta mengirimkan data tersebut ke server melalui jaringan internet.
+Pada bagian input, dua unit sensor PZEM-004T secara real-time membaca parameter kelistrikan berupa tegangan, arus, daya, energi listrik, frekuensi, dan faktor daya dari mesin konveksi yang digunakan. Data kelistrikan yang diperoleh kemudian dikirimkan ke ESP32 untuk diproses lebih lanjut. Selanjutnya, data tersebut disimpan ke dalam database melalui koneksi Wi-Fi dan digunakan sebagai data historis.
+Berdasarkan data historis yang telah tersimpan, sistem melakukan proses pengolahan menggunakan metode Double Exponential Smoothing (DES) untuk menghasilkan prediksi konsumsi energi listrik pada periode selanjutnya. Hasil prediksi ini digunakan untuk memberikan gambaran estimasi penggunaan energi listrik di masa mendatang.
+Seluruh data monitoring dan hasil prediksi kemudian ditampilkan pada web dashboard IoT sehingga pemilik usaha konveksi dapat memantau kondisi penggunaan energi listrik secara real-time. Selain itu, sistem juga dapat mengirimkan notifikasi melalui Telegram sebagai media informasi tambahan kepada pengguna, sehingga pemantauan dapat dilakukan dengan lebih praktis dan fleksibel dari mana saja.
+
+Gambar Blok Diagram
+Struktur Menu Admin
+Struktur menu pada website ALS Energy dirancang secara hierarkis agar pengguna dapat mengakses fitur dengan lebih mudah dan teratur. Halaman Login menjadi pintu masuk utama sebelum pengguna masuk ke Dashboard yang menampilkan ringkasan informasi sistem. Dari Dashboard, tersedia beberapa menu utama seperti Monitoring untuk melihat kondisi listrik secara realtime, Riwayat Data untuk menampilkan data sebelumnya beserta fitur filter dan ekspor Excel, serta Prediksi Energi yang digunakan untuk analisis metode DES lengkap dengan grafik peramalan. Selain itu, terdapat menu Notifikasi dan Log Sistem yang berfungsi untuk memantau alarm serta aktivitas pengguna, dan menu Pengaturan untuk mengubah konfigurasi sistem seperti tarif listrik dan ID Telegram. Susunan menu ini menunjukkan bahwa website ALS Energy memiliki pengelompokan fungsi yang jelas antara pemantauan, analisis, dan pengaturan sistem sehingga lebih mudah digunakan oleh pengguna.
+
+Struktur Menu Admin
+Flowchart Website 
+Flowchart ini berfokus pada pengalaman pengguna user flow saat mengakses website ALS Energy. Proses dimulai ketika pengguna membuka website dan diwajibkan melewati halaman Login. Pengguna harus memasukkan username dan password yang benar agar sistem bisa membuat sesi token autentikasi yang sah. Jika salah, sistem akan menampilkan pesan peringatan dan meminta pengguna mencoba lagi. Setelah berhasil login, pengguna diarahkan ke halaman utama Dashboard. Dari sini, pengguna bebas memilih menu yang ada di sidebar sebelah kiri, entah itu melihat data pemantauan real-time, mengecek riwayat, atau melihat prediksi energi. Sistem akan memproses dan menampilkan halaman sesuai menu yang diklik. Jika pengguna sudah selesai, mereka bisa menekan tombol Logout, di mana sistem akan menghapus sesi token dan mengembalikan pengguna ke halaman Login.
+
+Flowchart Website
+
+
+Flowchart Program
+Flowchart ini menggambarkan alur kerja perangkat keras ESP32 dari awal dinyalakan hingga pengiriman data. Saat alat pertama kali dihidupkan, sistem akan melakukan inisialisasi dan mencoba terhubung ke jaringan WiFi. Jika koneksi gagal, sistem akan terus mencoba menghubungkan ulang. Setelah terhubung, ESP32 mulai membaca data dari sensor PZEM-004T untuk Mesin 1 dan Mesin 2. Jika data yang terbaca valid, ESP32 akan mengirimkan data tersebut ke server menggunakan metode HTTP POST untuk disimpan ke dalam database MySQL. Selanjutnya, sistem akan mengecek apakah ada kondisi tidak wajar (misalnya mesin mati atau tegangan anjlok). Jika iya, sistem akan memicu pengiriman pesan peringatan ke bot Telegram. Setelah semua proses selesai, sistem akan memberi jeda waktu delay sesaat, lalu mengulang proses pembacaan sensor dari awal.
+
+Flowchart Program
+
+
+Flowchart Metode Double Exponential Smoothing
+Flowchart ini menjabarkan bagaimana algoritma DES bekerja di balik layar sistem. Proses dimulai saat pengguna menentukan mesin mana yang ingin diprediksi beserta rentang tanggalnya. Sistem kemudian mengambil data historis pemakaian listrik (kWh) dari database. Sistem akan mengecek apakah jumlah datanya mencukupi (minimal 3 data historis). Jika kurang, proses dihentikan dan muncul pesan error. Jika data cukup, sistem mulai melakukan proses pencarian (trial & error) untuk mencari parameter pemulusan (smoothing) yang paling optimal. Sistem akan menghitung rekursi nilai Level () dan Trend () untuk 81 kombinasi nilai  (Alpha) dan  (Beta) dari skala 0.1 hingga 0.9. Dari semua kombinasi tersebut, sistem akan memilih pasangan  dan  yang menghasilkan nilai error (MAPE) paling kecil. Setelah parameter terbaik ditemukan, sistem menggunakannya untuk memproyeksikan atau meramalkan pemakaian energi  hari ke depan, lalu menampilkan hasilnya dalam bentuk tabel dan grafik.
+
+Flowchart Metode
+
+Use Case Diagram
+Use Case Diagram pada sistem ALS Energy ini dirancang untuk memetakan interaksi fungsional antara pengguna dengan sistem website. Pada sistem ini, hanya terdapat satu aktor utama, yaitu Admin. Aktor Admin memiliki wewenang penuh (hak akses tertinggi) untuk mengelola seluruh operasional sistem.
+Sebelum dapat menggunakan fitur, Admin diwajibkan untuk melewati proses autentikasi pada use case "Melakukan Login". Setelah berhasil masuk, Admin dapat mengakses fungsionalitas utama seperti melihat ringkasan kondisi pada Dashboard, memantau tegangan dan arus mesin secara real-time, melihat dan mengekspor riwayat data pemakaian listrik ke format Excel, serta melakukan eksekusi peramalan (prediksi) menggunakan metode DES. Selain itu, Admin juga memiliki kontrol untuk mengubah parameter pengaturan, memantau log sistem, dan menutup sesi melalui use case "Melakukan Logout".
+
+Tampilan Use Case Diagram
+
+Struktur Tabel
+Database MySQL pada sistem ini diberi nama als_energy. Database tersebut menampung tiga tabel yang berfungsi sebagai pusat penyimpanan dari mikrokontroler (ESP32) sekaligus sumber data untuk website. Berikut adalah spesifikasi strukturnya :
+ Admins
+ Mesin
+ Sensor_Data
+Pemilihan tipe data FLOAT pada tabel sensor_data sangat krusial karena nilai yang dikirimkan oleh mikrokontroler ESP32 memiliki angka desimal dengan tingkat presisi yang tinggi. Data energi (kWh) dan daya (Watt) ini tidak boleh dibulatkan sembarangan (menjadi INT) karena sangat memengaruhi akurasi saat sistem melakukan proses perhitungan Double Exponential Smoothing (DES). Pemisahan tabel antara autentikasi (admins) dan catatan log (sensor_data) berhasil membuat proses penyimpanan data berjalan stabil dan terhindar dari crash (beban sistem) ketika ESP32 mengirimkan data setiap detiknya.
+Perancangan Perhitungan Metode (DES)
+Pada sistem ini, proses peramalan konsumsi energi listrik dikalkulasi pada sisi backend website menggunakan metode Double Exponential Smoothing (DES) dari Holt. Metode ini dipilih karena data konsumsi listrik di industri konveksi cenderung memiliki unsur tren (kenaikan atau penurunan). Perancangan algoritma perhitungan dibagi menjadi empat tahapan utama, yaitu:
+Inisialisasi Data Awal
+Sebelum proses iterasi pemulusan dilakukan, sistem membutuhkan nilai awal untuk parameter Level dan parameter Tren. Nilai inisialisasi pada waktu pertama (t = 1) ditetapkan berdasarkan dua data aktual historis yang pertama kali masuk ke database, dengan persamaan matematis sebagai berikut:
+Inisialisasi Level: 
+Inisialisasi Tren: 
+
+
+Keterangan:
+ = Nilai level pada waktu ke-1
+ = Nilai tren awal pada waktu ke-1
+ = Data aktual konsumsi listrik hari pertama (kWh)
+ = Data aktual konsumsi listrik hari kedua (kWh)
+Pemulusan Data (Smoothing Iteration)
+Setelah nilai inisialisasi didapatkan, sistem akan melakukan looping (perulangan) komputasi untuk data waktu ke-2 hingga waktu ke-. Pada tahap ini, sistem memperbarui nilai pemulusan level dan pemulusan tren dengan menerapkan koefisien pemulusan  (Alpha) dan  (Beta) yang nilainya berada di antara 0 dan 1.
+Pembaruan Nilai Level: 
+Pembaruan Nilai Tren: 
+Keterangan:
+ = Nilai level pemulusan pada waktu ke-
+ = Nilai tren pemulusan pada waktu ke-
+ = Nilai data aktual pada waktu ke-
+ = Parameter pemulusan data aktual () 
+ = Parameter pemulusan estimasi tren ()
+Tahap Peramalan (Forecasting)
+Nilai peramalan untuk periode di masa depan didapatkan dengan menjumlahkan nilai Level terakhir dengan perkalian antara nilai Tren terakhir dan jumlah langkah/waktu ke depan yang ingin diprediksi ().
+Persamaan Peramalan: 
+Keterangan:
+ = Hasil peramalan untuk  periode ke depan
+ = Nilai level terakhir yang dihitung
+ = Nilai tren terakhir yang dihitung
+ = Jangkauan atau target waktu yang akan diprediksi (hari)
+
+
+Tahap Evaluasi Tingkat Kesalahan (Error Evaluation)
+Karena parameter Alpha () dan Beta () ditentukan melalui proses trial and error (uji coba berulang 81 kombinasi oleh program Python), maka sistem membutuhkan fungsi objektif untuk menilai parameter mana yang paling akurat. Sistem mengevaluasi tingkat akurasi menggunakan metode pengujian Mean Absolute Percentage Error (MAPE) dengan rumus:
+Persamaan MAPE: 
+Keterangan: 
+ = Jumlah total data pengujian 
+ = Data aktual pemakaian energi
+ = Data hasil peramalan pada periode 
+Sistem secara otomatis akan memilih kombinasi  dan  yang menghasilkan persentase MAPE paling kecil sebagai model peramalan terbaik untuk ditampilkan ke pengguna.
+Rencana Desain Alat IoT
+Rencana desain alat IoT yang dibuat berupa sebuah sistem monitoring dan kontrol beban listrik yang ditempatkan di dalam sebuah box panel agar seluruh komponen elektronik terlindungi dan tersusun dengan rapi. Di dalam panel tersebut terdapat mikrokontroler sebagai pusat pengolahan data, serta terminal block untuk mempermudah proses pengkabelan antara sumber listrik, sensor, dan perangkat beban. Selain itu, pada rancangan alat ini juga digunakan modul komunikasi ESP32 yang menjadi bagian penting dalam sistem karena memungkinkan pengiriman data monitoring kelistrikan ke server atau sistem berbasis web dengan jangkauan yang lebih jauh dan konsumsi daya yang relatif rendah. Dengan susunan komponen yang terorganisir di dalam panel, alat ini tidak hanya mempermudah proses instalasi dan perawatan, tetapi juga meningkatkan keamanan serta mendukung implementasi sistem Internet of Things (IoT) untuk pemantauan listrik secara jarak jauh.
+
+Tampilan Rencana Desain IoT
+Desain Antarmuka Dashboard
+Login
+Halaman ini berfungsi sebagai gerbang akses utama bagi pengguna untuk masuk ke dalam sistem dengan memasukkan alamat email dan kata sandi pada kolom yang tersedia. Tujuannya adalah untuk memvalidasi identitas pengguna dan memastikan bahwa akses ke fitur monitoring maupun kontrol beban listrik hanya diberikan kepada pihak yang memiliki otoritas terdaftar.
+
+Halaman Login
+Dashboard Admin
+Halaman ini berfungsi sebagai pusat informasi utama yang menampilkan ringkasan kondisi sistem monitoring energi listrik secara real-time. Tujuannya adalah memberikan gambaran cepat kepada pengguna melalui informasi seperti total daya, total energi, serta estimasi biaya listrik, yang disajikan dalam bentuk kartu dan grafik. Dengan tampilan ini, pengguna dapat memantau kondisi penggunaan energi secara keseluruhan tanpa harus melihat data secara detail.
+
+Halaman Dashboard
+Monitoring Kelistrikan
+Halaman ini digunakan untuk menampilkan data parameter kelistrikan secara lebih rinci dan real-time. Informasi seperti tegangan, arus, daya, frekuensi, dan faktor daya ditampilkan dalam bentuk angka dan grafik sehingga memudahkan pengguna dalam memahami kondisi operasional perangkat. Dengan adanya halaman ini, pengguna dapat melakukan pemantauan langsung terhadap perubahan penggunaan energi listrik.
+
+Halaman Monitoring Kelistrikan
+
+
+Proyeksi Anggaran
+Halaman ini berfungsi untuk menampilkan hasil prediksi konsumsi energi listrik menggunakan metode Double Exponential Smoothing (DES). Tujuannya adalah membantu pengguna dalam memperkirakan penggunaan energi serta estimasi biaya listrik di masa mendatang berdasarkan data historis. Selain itu, halaman ini juga menyediakan informasi estimasi durasi penggunaan energi berdasarkan anggaran yang telah ditentukan.
+
+Halaman Prediksi kwh
+Riwayat
+Halaman ini digunakan untuk menyimpan dan menampilkan data historis konsumsi energi listrik yang telah direkam oleh sistem. Data ditampilkan dalam bentuk tabel yang dapat difilter berdasarkan periode waktu tertentu. Dengan adanya fitur ini, pengguna dapat melakukan analisis terhadap pola penggunaan energi listrik dari waktu ke waktu.
+
+Halaman Riwayat
+
+Log Sistem
+Halaman ini berfungsi untuk mencatat aktivitas yang terjadi pada sistem, seperti proses login pengguna dan perubahan konfigurasi. Tujuannya adalah untuk memberikan informasi terkait aktivitas sistem sehingga dapat digunakan sebagai bahan evaluasi maupun pengamanan sistem.
+
+Halaman Log Sistem
+Notifikasi
+Halaman ini digunakan untuk menampilkan riwayat notifikasi yang dikirimkan oleh sistem melalui Telegram. Informasi yang ditampilkan meliputi pesan peringatan atau kondisi tertentu yang terjadi pada sistem. Dengan adanya fitur ini, pengguna tetap dapat mengetahui kondisi sistem meskipun tidak selalu membuka dashboard.
+
+Halaman Notifikasi
+
+Pengaturan
+Halaman ini berfungsi untuk melakukan konfigurasi sistem sesuai dengan kebutuhan pengguna. Beberapa pengaturan yang tersedia meliputi tarif listrik, batas konsumsi energi, serta pengaturan notifikasi Telegram. Dengan adanya halaman ini, pengguna dapat menyesuaikan sistem agar sesuai dengan kondisi operasional yang diinginkan.
+
+Halaman Pengaturan
+Rangkaian Wiring
+Gambar Wiring Diagram
+
+Wiring Project
+Komponen :
+ESP32
+ESP32 merupakan sebuah mikrokontroler yang memiliki kemampuan pemrosesan yang cukup tinggi serta telah dilengkapi dengan fitur komunikasi nirkabel seperti WiFi dan Bluetooth. Perangkat ini banyak digunakan dalam sistem Internet of Things (IoT) karena mampu mengirim dan menerima data secara real-time serta memiliki jumlah pin input dan output yang cukup banyak untuk menghubungkan berbagai sensor dan modul pendukung. Dalam sistem ini, ESP32 berfungsi sebagai pusat pengolah data yang menerima input dari sensor PZEM-004T. Data yang diterima berupa parameter kelistrikan seperti tegangan, arus, daya, dan energi listrik. Selanjutnya, ESP32 mengolah data tersebut dan mengirimkannya ke server melalui jaringan WiFi sehingga dapat ditampilkan pada web dashboard serta digunakan untuk proses prediksi konsumsi energi listrik [14].
+Sensor PZEM-004T
+Modul PZEM-004T merupakan sensor yang digunakan untuk mengukur berbagai parameter kelistrikan seperti tegangan, arus, daya, energi listrik, frekuensi, dan faktor daya. Sensor ini bekerja dengan membaca kondisi listrik secara langsung pada beban yang terhubung dan mengirimkan data tersebut ke mikrokontroler melalui komunikasi serial. Dalam rangkaian ini digunakan dua buah sensor PZEM-004T yang masing-masing digunakan untuk memantau konsumsi energi listrik pada dua beban yang berbeda, yaitu mesin 1 dan mesin 2 pada industri konveksi. Setiap sensor dilengkapi dengan current transformer (CT) yang dipasang pada kabel fasa untuk mengukur arus listrik. Data hasil pengukuran dari kedua sensor kemudian dikirimkan ke ESP32 untuk diproses dan ditampilkan secara real-time pada sistem monitoring[5].
+RTC
+RTC (Real Time Clock) DS3231 adalah modul yang digunakan untuk menjaga informasi waktu secara akurat, seperti jam, menit, detik, tanggal, bulan, dan tahun. Modul ini memiliki baterai cadangan sehingga tetap dapat menyimpan waktu meskipun sistem utama sedang tidak mendapatkan suplai listrik. Dalam sistem ini, RTC digunakan untuk memberikan informasi waktu yang dibutuhkan dalam proses pencatatan atau penjadwalan sistem. Data waktu dari RTC dapat digunakan oleh ESP32 untuk menentukan kapan suatu proses harus dijalankan atau untuk menampilkan waktu secara real time pada LCD[16].
+LCD 16x2 I2C
+LCD 16x2 merupakan layar tampilan yang digunakan untuk menampilkan informasi dalam bentuk teks. Modul ini mampu menampilkan dua baris teks dengan masing-masing baris berisi hingga 16 karakter. Dengan tambahan modul I2C, jumlah pin yang digunakan menjadi lebih sedikit sehingga memudahkan dalam proses pemasangan. Dalam sistem ini, LCD digunakan sebagai media untuk menampilkan berbagai informasi yang dihasilkan oleh ESP32, seperti hasil pembacaan sensor, kondisi perangkat, atau informasi waktu. Dengan adanya LCD, pengguna dapat dengan mudah memantau kondisi sistem secara langsung[10].
+
+Tabel Wiring
+ Wiring PZEM 004T 1
+ Wiring PZEM 004T 2
+ Wiring LCD I2C
+ RTC (DS3231)
+
+
+
+IMPLEMENTASI DAN PENGUJIAN
+Implementasi Web
+Implementasi Dashboard Monitoring
+Halaman Login
+
+Tampilan Login
+Halaman ini merupakan gerbang keamanan utama yang membatasi akses sistem hanya untuk administrator. Pengguna harus memasukkan username dan password yang akan divalidasi oleh server menggunakan metode autentikasi aman berbasis sebelum dapat mengakses seluruh fitur dashboard.
+Halaman Dashboard
+
+Tampilan Dashboard
+Halaman ini memberikan gambaran ringkas kondisi kelistrikan secara real-time. Dashboard menampilkan metrik utama berupa total daya aktif gabungan, konsumsi energi (kWh) masing-masing mesin, estimasi tagihan listrik berjalan, status koneksi sistem, serta grafik dinamis pemantauan beban daya aktif yang diperbarui secara otomatis.
+Halaman Monitoring
+
+Tampilan Monitoring
+Halaman pemantauan mendalam ini menampilkan pembacaan sensor PZEM-004T secara real-time untuk mesin yang dipilih pengguna. Data ditampilkan secara visual melalui komponen gauge (Tegangan, Arus,Daya), kartu informasi (Frekuensi, Faktor Daya, Energi), serta grafik garis multi-sumbu yang melacak riwayat 30 data pengukuran terakhir secara berkala.
+Halaman Riwayat Data
+
+Tampilan Riwayat data
+
+Halaman ini berfungsi sebagai repositori rekaman historis dari seluruh data sensor dalam format tabel terstruktur. Dilengkapi dengan fitur navigasi halaman (pagination), pengguna dapat memfilter data berdasarkan rentang tanggal atau mesin tertentu, serta mengekspor hasil penyaringan tersebut ke dalam format Excel untuk keperluan pelaporan.
+Halaman Prediksi
+
+Tampilan Prediksi kWh
+Halaman ini merupakan fitur kecerdasan buatan sistem untuk meramalkan konsumsi energi di masa depan (1, 7, atau 30 hari) menggunakan algoritma Double Exponential Smoothing (DES). Sistem secara otomatis mencari parameter optimal dengan kesalahan (MAPE) terkecil, lalu menyajikan hasil prediksinya melalui metrik ringkasan, grafik peramalan interaktif, dan tabel rincian data harian.
+
+
+
+Halaman Notifikasi
+
+Tampilan Notifikasi
+Halaman ini menyediakan log riwayat pesan peringatan otomatis yang dikirimkan oleh sistem ke bot Telegram administrator. Tabel notifikasi mencatat waktu, isi pesan, dan status pengiriman terkait kejadian penting seperti jadwal operasional mesin, status koneksi perangkat, hingga deteksi pemadaman listrik.
+Halaman Log Sistem
+
+Tampilan Log sistem
+Halaman ini mencatat seluruh jejak aktivitas pengguna dan sistem (audit trail) secara kronologis. Informasi yang direkam meliputi kejadian login, perubahan pengaturan, serta error aplikasi, yang ditandai dengan warna berbeda (badge) untuk mempermudah administrator melacak dan mengaudit keamanan operasional sistem.
+
+Halaman Pengaturan
+
+Tampilan Pengaturan
+Halaman ini merupakan antarmuka khusus bagi administrator untuk mengonfigurasi parameter krusial operasional sistem. Pengaturan yang dapat diubah meliputi tarif dasar listrik (Rp/kWh) untuk perhitungan estimasi biaya, penentuan jam operasional mesin untuk pemicu notifikasi, serta pembaruan kredensial token bot Telegram.
+Implementasi Backend dan Database
+Implementasi Database (MySQL)
+Database pada sistem ini menggunakan MySQL sebagai media penyimpanan data monitoring energi listrik secara terpusat. Database digunakan untuk menyimpan data hasil pembacaan sensor PZEM-004T seperti tegangan, arus, daya, energi listrik, frekuensi, power factor, serta waktu pengambilan data dari masing-masing mesin. Selain itu, database juga digunakan untuk menyimpan data pengguna, hasil prediksi DES, dan riwayat notifikasi sistem. Data monitoring dikirimkan oleh ESP32 secara real-time melalui jaringan WiFi sehingga data dapat langsung tersimpan ke dalam database untuk kebutuhan monitoring dan analisis data historis.
+Implementasi Web Server dan REST API (Python Flask)
+Sistem server dikembangkan menggunakan bahasa pemrograman Python dengan framework Flask. Flask digunakan sebagai penghubung antara perangkat ESP32, database MySQL, dan web dashboard monitoring. Komunikasi data pada sistem menggunakan metode REST API, dimana ESP32 mengirimkan data sensor dalam format JSON ke server menggunakan metode POST. Server kemudian memproses dan menyimpan data tersebut ke database serta menampilkan data monitoring secara real-time pada dashboard web. Selain itu, server juga menyediakan layanan pengambilan data historis dan pengelolaan data prediksi energi listrik.
+Implementasi Algoritma Prediksi (DES)
+Metode Double Exponential Smoothing (DES) diimplementasikan pada sisi server untuk melakukan prediksi konsumsi energi listrik berdasarkan data historis yang tersimpan pada database. Proses perhitungan dilakukan menggunakan parameter alpha (α) dan beta (β) yang dicari menggunakan metode trial and error sebanyak 81 kombinasi. Pada setiap kombinasi, sistem menghitung nilai prediksi dan nilai error menggunakan metode Mean Absolute Percentage Error (MAPE). Kombinasi parameter dengan nilai MAPE terkecil dipilih sebagai model prediksi terbaik untuk menghasilkan forecasting konsumsi energi listrik harian, mingguan, dan bulanan.
+Implementasi Keamanan dan Integrasi Bot Telegram
+Sistem dilengkapi dengan fitur keamanan menggunakan JSON Web Token untuk mengamankan proses autentikasi pengguna pada web dashboard. Setelah pengguna berhasil melakukan login, sistem akan memberikan token autentikasi yang digunakan untuk mengakses layanan sistem. Selain itu, sistem juga terintegrasi dengan Telegram Bot sebagai media notifikasi otomatis. Telegram digunakan untuk mengirimkan peringatan ketika terjadi kondisi tertentu seperti sistem monitoring offline, penggunaan mesin di luar jam operasional, dan penggunaan energi listrik yang melebihi batas yang telah ditentukan.
+Implementasi Alat
+Implementasi Prototype
+Implementasi prototype sistem monitoring dan prediksi konsumsi energi listrik pada penelitian ini dilakukan dengan merealisasikan rancangan sistem yang telah dibahas pada Bab II ke dalam bentuk perangkat fisik yang dapat digunakan untuk proses monitoring energi listrik secara real-time. Prototype yang dibangun berfungsi sebagai media monitoring penggunaan energi listrik pada mesin konveksi, sekaligus sebagai sumber data historis yang digunakan dalam proses prediksi konsumsi energi menggunakan metode Double Exponential Smoothing (DES).
+Pada implementasi yang telah dilakukan, sistem telah mampu menjalankan proses monitoring parameter kelistrikan pada mesin bordir dan mesin jahit secara langsung. Data hasil pembacaan sensor kemudian dikirimkan ke server melalui jaringan WiFi untuk disimpan ke database dan ditampilkan pada dashboard web monitoring. Selain itu, sistem juga telah terintegrasi dengan fitur prediksi konsumsi energi listrik dan notifikasi Telegram sehingga pengguna dapat memantau kondisi penggunaan listrik secara lebih efektif.
+Adapun komponen utama yang telah berhasil diimplementasikan pada prototype meliputi:
+Adaptor 5V, digunakan sebagai sumber catu daya utama untuk menyuplai tegangan ke seluruh rangkaian sistem.
+ESP32 DevKit V1, digunakan sebagai pusat pengendali sistem untuk membaca data sensor, mengolah data, serta mengirimkan data monitoring ke server melalui jaringan WiFi.
+Sensor PZEM-004T Mesin 1, digunakan untuk membaca parameter kelistrikan pada mesin bordir seperti tegangan, arus, daya, energi listrik, frekuensi, dan power factor.
+Sensor PZEM-004T Mesin 2, digunakan untuk membaca parameter kelistrikan pada mesin jahit secara real-time.
+RTC DS3231, digunakan sebagai modul real-time clock untuk mencatat waktu pengambilan data monitoring sehingga data historis tersimpan sesuai timestamp.
+LCD 16x2 I2C, digunakan sebagai media tampilan lokal untuk menampilkan informasi parameter kelistrikan secara langsung pada alat.
+Web Dashboard Monitoring, digunakan untuk menampilkan data monitoring, grafik konsumsi energi, hasil prediksi DES, nilai MAPE, serta fitur notifikasi sistem..
+Telegram Bot, digunakan sebagai media notifikasi otomatis ketika terjadi kondisi tertentu seperti sistem offline, penggunaan mesin di luar jam operasional, dan konsumsi energi melebihi batas yang telah ditentukan.
+
+Tampilan Prototype
+Pada tahap implementasi fisik, seluruh komponen telah dirakit dan diuji sehingga mampu bekerja sebagai satu kesatuan sistem monitoring energi listrik berbasis IoT. Hasil implementasi prototype ditunjukkan melalui dokumentasi perangkat yang telah dibangun dan pengujian sistem monitoring secara real-time.
+Implementasi Akuisisi dan Komunikasi Data
+Implementasi akuisisi dan komunikasi data pada penelitian ini dilakukan untuk mendukung proses monitoring energi listrik secara real-time dari perangkat keras menuju server dan dashboard web. Sistem dirancang agar data hasil pembacaan sensor dapat dikirim, disimpan, dan ditampilkan secara otomatis sehingga pengguna dapat memantau kondisi penggunaan energi listrik pada mesin konveksi secara langsung.
+Akuisisi Data Sensor
+Proses akuisisi data dilakukan menggunakan dua sensor PZEM-004T yang terhubung dengan ESP32. Sensor pertama digunakan untuk membaca parameter kelistrikan pada mesin bordir, sedangkan sensor kedua digunakan untuk membaca parameter kelistrikan pada mesin jahit. Data yang dibaca meliputi tegangan (voltage), arus (current), daya (power), energi listrik (energy), frekuensi (frequency), dan power factor, Pembacaan data dilakukan secara periodik setiap 1 menit untuk menghasilkan data historis yang digunakan pada proses monitoring dan forecasting energi listrik menggunakan metode Double exponential smoothing.
+
+Tampilan Serial Monitor
+Hasil pembacaan menunjukkan bahwa ESP32 berhasil menerima data dari kedua sensor PZEM-004T secara real-time. Data yang diperoleh kemudian diproses sebelum dikirimkan menuju server.
+
+Implementasi Komunikasi Data ESP32 ke Server
+Komunikasi data pada sistem dilakukan menggunakan jaringan WiFi yang terhubung ke ESP32. Setelah data sensor berhasil dibaca, ESP32 akan mengirimkan data menuju server menggunakan metode REST API dengan format JSON dan metode HTTP POST.
+Adapun data yang dikirim meliputi:
+Identitas mesin
+Tegangan
+Arus
+Daya
+Energi listrik
+Frekuensi
+Power factor
+Timestamp data
+Server kemudian menerima data tersebut untuk diproses dan disimpan ke database MySQL.
+
+Tampilan request data API
+Hasil pengujian menunjukkan bahwa ESP32 mampu mengirimkan data monitoring ke server secara real-time melalui jaringan WiFi tanpa mengalami kehilangan data yang signifikan.
+Implementasi Penyimpanan Database
+Data yang diterima server kemudian disimpan ke dalam database MySQL secara otomatis. Database digunakan untuk menyimpan data historis monitoring energi listrik yang nantinya digunakan pada proses visualisasi dashboard dan perhitungan prediksi DES.
+Struktur data yang disimpan meliputi:
+ID data
+id mesin
+Tegangan
+Arus
+Daya
+Energi listrik
+Frekuensi
+Power factor
+Waktu pengambilan data
+
+Tampilan tabel database
+Hasil implementasi menunjukkan bahwa seluruh data monitoring berhasil tersimpan ke database secara real-time sesuai dengan waktu pengambilan data dari sensor.
+Implementasi Telegram Bot
+Telegram Bot digunakan sebagai media notifikasi otomatis pada sistem monitoring. Server akan mengirimkan pesan notifikasi ketika terjadi kondisi tertentu, seperti sistem offline, penggunaan mesin di luar jam operasional, dan penggunaan energi listrik melebihi batas yang telah ditentukan. Notifikasi dikirim secara otomatis melalui Telegram sehingga pengguna dapat mengetahui kondisi sistem meskipun tidak membuka dashboard monitoring.
+
+Tampilan Notifikasi Telegram
+Hasil implementasi menunjukkan bahwa sistem berhasil mengirimkan notifikasi otomatis melalui Telegram sesuai kondisi yang telah ditentukan pada sistem monitoring.
+Pengujian Alat (Sensor)
+Pengujian Sensor PZEM-004T
+Pengujian sensor PZEM-004T dilakukan untuk mengetahui tingkat akurasi sensor dalam membaca parameter kelistrikan berupa tegangan, arus, dan daya listrik. Pengujian dilakukan dengan membandingkan hasil pembacaan sensor terhadap alat ukur referensi seperti multimeter dan watt meter pada beberapa kondisi beban mesin konveksi. Pada proses pengujian, sensor membaca data kelistrikan dari mesin bordir dan mesin jahit secara real-time. Hasil pembacaan kemudian dibandingkan dengan alat ukur referensi untuk mengetahui nilai selisih dan persentase error pembacaan sensor.
+
+Rumus Presentase Error :
+Rumus Akurasi Sensor :
+ Pengujian Tegangan Sensor PZEM-004T
+Berdasarkan hasil pengujian tegangan, sensor PZEM-004T mampu membaca nilai tegangan dengan tingkat akurasi yang sangat tinggi. Nilai error yang dihasilkan relatif kecil, yaitu di bawah 1%, sehingga pembacaan tegangan oleh sensor dapat dikatakan stabil dan mendekati nilai referensi. Dengan hasil tersebut, sensor dinilai layak digunakan untuk proses monitoring tegangan listrik pada sistem.
+ Pengujian Arus Sensor PZEM-004T
+Hasil pengujian arus menunjukkan bahwa sensor PZEM-004T mampu membaca nilai arus dengan cukup baik dan stabil. Persentase error yang dihasilkan masih berada pada rentang kecil, yaitu sekitar 2%, sehingga tingkat akurasi pembacaan arus tetap tergolong baik untuk kebutuhan monitoring energi listrik secara real-time.
+ Pengujian Daya Sensor PZEM-004T
+Berdasarkan hasil pengujian daya, sensor PZEM-004T menghasilkan pembacaan daya yang cukup akurat dengan nilai error yang relatif rendah. Nilai akurasi rata-rata berada di atas 98%, sehingga sensor mampu digunakan untuk memantau konsumsi daya listrik pada mesin konveksi secara real-time dan kontinu.
+Pengujian BlackBox
+ Pengujian BlackBox
+Berdasarkan hasil pengujian Black Box yang telah dilakukan, seluruh fitur pada sistem monitoring energi listrik berbasis IoT dapat berjalan sesuai dengan fungsi yang dirancang. Proses monitoring data sensor, penyimpanan database, forecasting menggunakan metode DES, hingga pengiriman notifikasi Telegram berhasil dijalankan dengan baik tanpa ditemukan kesalahan fungsi pada sistem. Dengan demikian, sistem dinilai telah mampu memenuhi kebutuhan monitoring dan prediksi konsumsi energi listrik pada industri konveksi.
+
+
+ Pengujian Browser
+Berdasarkan hasil pengujian kompatibilitas browser, sistem website monitoring energi listrik berhasil berjalan dengan baik pada browser Google Chrome, Microsoft Edge, dan Safari. Seluruh fitur utama seperti tampilan halaman, login admin, grafik interaktif, proses prediksi DES, filter data, ekspor Excel, hingga monitoring real-time dapat dijalankan tanpa kendala pada masing-masing browser. Selain itu, tampilan website juga responsif pada berbagai ukuran layar sehingga memberikan pengalaman pengguna yang baik. Dengan demikian, sistem dapat dinyatakan kompatibel dan stabil digunakan pada berbagai platform browser modern.
+Pengujian Telegram
+Berdasarkan hasil pengujian Bot Telegram, seluruh fitur sistem berhasil berjalan dengan baik sesuai skenario yang direncanakan. Bot mampu mendeteksi kondisi ESP32 offline, menampilkan informasi monitoring listrik, memberikan laporan energi, serta merespon berbagai command dengan benar. Selain itu, sistem keamanan Chat ID juga berjalan dengan baik sehingga hanya pengguna yang terdaftar yang dapat mengakses bot. Dari 7 skenario pengujian yang dilakukan, seluruhnya memperoleh hasil “Sesuai” dengan tingkat keberhasilan sebesar 100%, sehingga dapat disimpulkan bahwa integrasi Bot Telegram pada sistem monitoring energi listrik telah berfungsi secara optimal.
+
+Pengujian Metode
+Pengujian metode dilakukan untuk mengetahui kemampuan metode Double Exponential Smoothing (DES) dalam melakukan prediksi konsumsi energi listrik berdasarkan data historis yang diperoleh dari sistem monitoring. Pada penelitian ini, metode DES digunakan untuk memprediksi konsumsi energi listrik harian menggunakan data energi listrik yang tersimpan pada database. Tingkat akurasi hasil prediksi kemudian dievaluasi menggunakan metode Mean Absolute Percentage Error (MAPE).
+Dataset dan Parameter
+Dataset yang digunakan pada penelitian ini merupakan data historis konsumsi energi listrik yang diperoleh dari hasil monitoring sensor PZEM-004T pada mesin bordir dan mesin jahit. Data yang digunakan berupa data energi listrik harian (kWh) yang tersimpan pada database sistem monitoring. Proses pengambilan data dilakukan secara real-time dengan interval pembacaan setiap 1 menit, kemudian data diakumulasi menjadi data konsumsi energi harian untuk proses forecasting.
+ Dataset
+Implementasi Perhitungan DES
+Penentuan Parameter Alpha dan Beta
+Pada implementasi Double Exponential Smoothing (DES), parameter α dan β (0,1–0,9) diuji coba dengan 81 kombinasi. Hasil prediksi dievaluasi menggunakan MAPE; semakin kecil MAPE, semakin akurat prediksi mendekati data aktual konsumsi energi listrik. Kombinasi dengan MAPE terkecil merupakan yang terbaik.
+ Hasil Pengujian Kombinasi Alpha dan Beta Terbaik
+Berdasarkan hasil pengujian tersebut, kombinasi parameter terbaik diperoleh pada nilai alpha (α\alphaα) sebesar 0,4 dan beta (β\betaβ) sebesar 0,2 dengan nilai MAPE sebesar 19.586%. Nilai tersebut merupakan nilai error terkecil dibandingkan kombinasi parameter lainnya sehingga digunakan sebagai parameter utama dalam proses forecasting konsumsi energi listrik pada penelitian ini.
+Implementasi Dataset Pengujian
+Berdasarkan dataset historis konsumsi energi listrik yang telah diperoleh dari sistem monitoring, proses perhitungan metode Double Exponential Smoothing (DES) dilakukan menggunakan parameter terbaik hasil pengujian sebelumnya, yaitu alpha (α) sebesar 0,4 dan beta (β) sebesar 0,2. Perhitungan dilakukan menggunakan Microsoft Excel untuk memperoleh nilai level (St​), trend (Bt​), forecast (Ft​), error, serta nilai Absolute Percentage Error (APE) pada setiap periode data, Dataset yang digunakan pada implementasi perhitungan merupakan data konsumsi energi listrik harian hasil monitoring mesin konveksi.
+ Dataset Pengujian
+Selanjutnya, dataset tersebut digunakan dalam proses perhitungan metode DES untuk menghasilkan nilai prediksi konsumsi energi listrik pada setiap periode. Hasil implementasi perhitungan DES ditunjukkan pada tabel berikut.
+ Tabel Hasil Perhitungan
+Berdasarkan hasil implementasi perhitungan DES, metode mampu menghasilkan nilai prediksi yang mengikuti pola data historis konsumsi energi listrik. Nilai forecast pada beberapa periode menunjukkan hasil yang cukup mendekati data aktual, meskipun pada kondisi tertentu masih terdapat selisih prediksi akibat perubahan konsumsi energi yang cukup fluktuatif.
+Analisis Hasil Prediksi
+Berdasarkan hasil pengujian metode Double Exponential Smoothing (DES), diperoleh parameter terbaik yaitu alpha (α) sebesar 0,4 dan beta (β) sebesar 0,2 dengan nilai MAPE sebesar 19,586%. Nilai tersebut menunjukkan bahwa metode DES mampu memberikan hasil prediksi yang cukup baik terhadap konsumsi energi listrik harian. Berdasarkan grafik aktual dan forecast, data konsumsi energi listrik memiliki pola yang fluktuatif akibat perubahan aktivitas operasional mesin konveksi. Garis forecast DES terlihat lebih stabil dibandingkan data aktual, namun tetap mampu mengikuti kecenderungan tren konsumsi energi berdasarkan data historis. Hasil prediksi juga menunjukkan adanya kecenderungan penurunan konsumsi energi pada periode berikutnya. Secara keseluruhan, metode DES mampu digunakan untuk membantu proses prediksi konsumsi energi listrik pada industri konveksi karena hasil forecast yang diperoleh cukup mendekati data actual
+Pengujian User
+Penilaian responden terhadap kualitas tampilan dan kenyamanan penggunaan aplikasi menunjukkan kecenderungan hasil yang sangat positif.
+Berdasarkan hasil kuisioner terhadap 20 responden dengan total 200 jawaban, sistem monitoring dan prediksi konsumsi energi listrik memperoleh penilaian yang sangat baik dari pengguna. Hasil persentase menunjukkan bahwa kategori “Sangat Setuju” memperoleh nilai tertinggi sebesar 59%, kategori “Setuju” sebesar 35,5%, dan kategori “Cukup Setuju” sebesar 5,5%, sedangkan kategori “Kurang Setuju” dan “Tidak Setuju” memperoleh 0%.
+Hasil tersebut menunjukkan bahwa mayoritas responden merasa sistem telah berjalan dengan baik, mulai dari fitur monitoring realtime, prediksi konsumsi energi, notifikasi Telegram, hingga tampilan antarmuka yang mudah dipahami dan nyaman digunakan.
+
+KESIMPULAN DAN SARAN
+Kesimpulan
+Berdasarkan hasil perancangan, implementasi, dan pengujian yang telah dilakukan, maka dapat diperoleh beberapa kesimpulan sebagai berikut:
+Sistem monitoring konsumsi energi listrik berbasis Internet of Things (IoT) berhasil dirancang menggunakan ESP32 dan dua sensor PZEM-004T untuk memantau parameter kelistrikan secara real-time pada mesin bordir dan mesin jahit di industri konveksi.
+Sistem mampu menampilkan data monitoring berupa tegangan, arus, daya, energi listrik, frekuensi, dan faktor daya melalui dashboard web serta LCD secara real-time.
+Sistem berhasil mengirimkan data monitoring ke database melalui jaringan internet sehingga data historis konsumsi energi listrik dapat tersimpan dengan baik dan digunakan untuk proses analisis.
+Metode Double Exponential Smoothing (DES) berhasil diimplementasikan untuk melakukan prediksi konsumsi energi listrik berdasarkan data historis yang diperoleh dari sistem monitoring.
+Berdasarkan hasil pengujian parameter menggunakan metode trial and error sebanyak 81 kombinasi, diperoleh parameter terbaik yaitu alpha (α) sebesar 0,4 dan beta (β) sebesar 0,2 dengan nilai MAPE sebesar 19,586%, sehingga metode DES dinilai mampu memberikan hasil prediksi yang cukup baik.
+Sistem juga berhasil mengimplementasikan fitur notifikasi Telegram untuk memberikan informasi kondisi sistem dan penggunaan energi listrik kepada pengguna secara lebih praktis.
+
+Saran
+Sistem dapat dikembangkan menggunakan server hosting atau VPS agar proses monitoring dan pengiriman notifikasi tetap berjalan meskipun laptop server dimatikan.
+Penelitian selanjutnya dapat menggunakan metode prediksi lain seperti ARIMA, LSTM, atau Hybrid Forecasting untuk membandingkan tingkat akurasi hasil prediksi konsumsi energi listrik.
+Sistem dapat dikembangkan dengan menambahkan fitur kontrol otomatis pada beban listrik untuk meningkatkan efisiensi penggunaan energi.
+Jumlah dataset historis dapat diperbanyak agar hasil prediksi yang diperoleh menjadi lebih stabil dan akurat.
+Tampilan dashboard dapat dikembangkan menjadi aplikasi mobile agar monitoring konsumsi energi listrik menjadi lebih mudah dan fleksibel.
+Sistem dapat dikembangkan dengan menambahkan fitur notifikasi penggunaan listrik di luar jam kerja serta batas konsumsi energi harian untuk membantu pengelolaan biaya operasional industri konveksi.
+
+
+
+
+
+
+.
+DAFTAR PUSTAKA
+[1]	A. Ratnasari and D. H. Kirwani, “Peranan Industri Kecil Menengah (Ikm) Dalam Penyerapan Tenaga Kerja Di Kabupaten Ponorogo,” J. Pendidik. Ekon., pp. 1–6, 2013, [Online]. Available: https://ejournal.unesa.ac.id/index.php/jupe/article/download/3625/6221
+[2]	A. Hasan, “Analisis hasil pengukuran kualitas daya energi listrik pada industri tekstil,” pp. 81–87, 2012.
+[3]	H. B. Santoso, S. Prajogo, and S. R. I. P. Mursid, “Pengembangan Sistem Pemantauan Konsumsi Energi Rumah Tangga Berbasis Internet of Things ( IoT ),” vol. 6, no. 3, pp. 357–366, 2018.
+[4]	P. T. Pln and P. Area, “Peramalan Konsumsi Energi Listrik untuk Sektor,” vol. 12, no. 1, 2023.
+[5]	I. M. Sumerta Yasa, “Sistem Monitoring Proteksi Arus Lebih Menggunakan Sensor Pzem-004T Berbasis Mikrokontroler Dan Internet of Things,” J. Ilm. Vastuwidya, vol. 8, no. 1, pp. 32–38, 2025, doi: 10.47532/jiv.v8i1.1203.
+[6]	M. F. Azima and R. Setiawansyah, “Penerapan Double Exponential Smoothing dalam Sistem Prediksi Penyediaan Stok Madu pada UMKM Al-Ghifary,” vol. 5, no. 4, pp. 1171–1185, 2026.
+[7]	R. Bangun, S. Monitoring, M. A. Asyhar, R. N. Ahmad, M. Surakarta, and J. A. Yani, “CONTROLLING PENGG U NAAN DAYA LISTRIK RUMAH TANGGA BERBASIS INTERNET OF THINGS MENGGUNAKAN ESP32 DAN APLIKASI TELEGRAM”.
+[8]	K. J. Purjianto and M. N. Faiq, “Prototipe Monitoring Energi Listrik Berbasis Internet of Things (IoT) guna Mewujudkan Rumah Pintar,” LOFIAN J. Teknol. Inf. dan Komun., vol. 4, no. 1, pp. 1–6, 2024.
+[9]	W. F. Galla and N. J. Meok, “PERANCANGAN DAN IMPLEMENTASI SMART KWH METER BERBASIS ESP32 UNTUK MONITORING DAN PENGENDALIAN KONSUMSI ENERGI LISTRIK RUMAH TANGGA 1300 VA Info Artikel,” vol. XIV, no. 2, pp. 144–150, 2025, doi: 10.35508/jme.v0i0.26954.
+[10]	S. Nurazizah, “Integrasi Sensor Iot Pada Sistem Rumah Cerdas Untuk Deteksi Kebakaran Dan Gas Berbahaya,” J. Inform. dan Tek. Elektro Terap., vol. 14, no. 1, 2026, doi: 10.23960/jitet.v14i1.8257.
+[11]	I. Imsar, E. Dan, and B. Islam, “Strategi Home Industri Konveksi Dalam Meningkatkan Pendapatan Rumah Tangga Masyarakat Kota Binjai (Studi Kasus Abu Bakar Konveksi Mencirim Binjai Timur),” J. Ilmu Manaj. Dan Kewirausahaan, vol. 1, no. 2, pp. 48–59, 2021.
+[12]	R. Sulistyowati, N. S. Erwanti, P. Studi, and T. Elektro, “PROTOTIPE SISTEM MONITORING INSTALASI DAYA LISTRIK,” pp. 738–742.
+[13]	K. C. Pradana, “MENGGUNAKAN METODE AUTOREGRESSIVE INTEGRATED MOVING AVERAGE ( ARIMA ),” 2021.
+[14]	S. A. Arrahma and R. Mukhaiyar, “Pengujian Esp32-Cam Berbasis Mikrokontroler ESP32,” JTEIN J. Tek. Elektro Indones., vol. 4, no. 1, pp. 60–66, 2023.
+[15]	Khairul Umurani, Rahmatullah, Muharnif M, Sri Asfiati, and Didik Mei Sandi, “Pembuatan Alat Pelipat Baju Otomatis Berbasis Arduino Uno Untuk UMKM Laundry,” J. Rekayasa Mater. Manufaktur dan Energi, vol. 8, no. 1, pp. 97–106, 2025, [Online]. Available: http://jurnal.umsu.ac.id/index.php/RMME
+[16]	Syalaisha Maliota Safrilly; Rohjai Badarudin, “ELECTROPS Jurnal Ilmiah Teknik Elektro Sistem Monitoring Suhu secara Real-Time berbasis Arduino Uno untuk Pemantauan Lingkungan,” EELCTROPS J. Ilm. Tek. Elektro, vol. 3, no. 2, pp. 1–7, 2024, [Online]. Available: http://e-journals.unmul.ac.id/index.php/TE
+[17]	G. Gunawan, “Sistem Kontrol dan Monitoring Beban Listrik di Pondok Pesantren Al-Husna Pontianak Berbasis IoT,” J. Litek  J. List. Telekomun. Elektron., vol. 22, no. 2, pp. 94–101, 2025, doi: 10.30811/litek.v22i2.80.
+[18]	2024 Sadewa et al., “SISTEM INFORMASI AKADEMIK BERBASIS WEB PADA SMK AL-ISLAM SURAKARTA Fakultas Ilmu Komputer Universitas Duta Bangsa Surakarta Abstraksi Keywords : Pendahuluan Sadewa dkk , Sistem Informasi Akademik Berbasis Web Pada Smk Al-Islam Surakarta Tinjauan Pustaka M,” vol. 6, no. 1, pp. 63–69, 2024.
+[19]	D. Rustiana et al., “SISTEM OBSERVASI LINGKUNGAN OTOMATIS SEBAGAI PENCEGAHAN KEBAKARAN DENGAN INTEGRASI SENSOR GAS MQ-2 DAN ESP8266,” vol. 12, no. 1, pp. 1–12, 2026.
+

@@ -1,0 +1,228 @@
+Section not found:
+
+Saran
+Sistem
+ 
+dapat
+ 
+dikembangkan
+ 
+menggunakan
+ server hosting 
+atau
+ VPS agar proses monitoring dan 
+pengiriman
+ 
+notifikasi
+ 
+tetap
+ 
+berjalan
+ 
+meskipun
+ laptop server 
+dimatikan
+.
+Penelitian
+ 
+selanjutnya
+ 
+dapat
+ 
+menggunakan
+ 
+metode
+ 
+prediksi
+ lain seperti ARIMA, LSTM, 
+atau
+ Hybrid Forecasting untuk 
+membandingkan
+ 
+tingkat
+ 
+akurasi
+ 
+hasil
+ 
+prediksi
+ 
+konsumsi
+ 
+energi
+ 
+listrik
+.
+Sistem
+ 
+dapat
+ 
+dikembangkan
+ 
+dengan
+ 
+menambahkan
+ 
+fitur
+ 
+kontrol
+ 
+otomatis
+ pada 
+beban
+ 
+listrik
+ untuk 
+meningkatkan
+ 
+efisiensi
+ 
+penggunaan
+ 
+energi
+.
+Jumlah
+ dataset 
+historis
+ 
+dapat
+ 
+diperbanyak
+ agar 
+hasil
+ 
+prediksi
+ yang 
+diperoleh
+ 
+menjadi
+ lebih 
+stabil
+ dan 
+akurat
+.
+Tampilan
+ dashboard 
+dapat
+ 
+dikembangkan
+ 
+menjadi
+ 
+aplikasi
+ mobile agar monitoring 
+konsumsi
+ 
+energi
+ 
+listrik
+ 
+menjadi
+ lebih 
+mudah
+ dan 
+fleksibel
+.
+Sistem
+ 
+dapat
+ 
+dikembangkan
+ 
+dengan
+ 
+menambahkan
+ 
+fitur
+ 
+notifikasi
+ 
+penggunaan
+ 
+listrik
+ di 
+luar
+ jam 
+kerja
+ 
+serta
+ batas 
+konsumsi
+ 
+energi
+ 
+harian
+ untuk 
+membantu
+ 
+pengelolaan
+ 
+biaya
+ 
+operasional
+ 
+industri
+ 
+konveksi
+.
+.
+DAFTAR PUSTAKA
+[1]
+A. Ratnasari and D. H. Kirwani, “Peranan Industri Kecil Menengah (Ikm) Dalam Penyerapan Tenaga Kerja Di Kabupaten Ponorogo,” 
+J. Pendidik. Ekon.
+, pp. 1–6, 2013, [Online]. Available: https://ejournal.unesa.ac.id/index.php/jupe/article/download/3625/6221
+[2]
+A. Hasan, “Analisis hasil pengukuran kualitas daya energi listrik pada industri tekstil,” pp. 81–87, 2012.
+[3]
+H. B. Santoso, S. Prajogo, and S. R. I. P. Mursid, “Pengembangan Sistem Pemantauan Konsumsi Energi Rumah Tangga Berbasis Internet of Things ( IoT ),” vol. 6, no. 3, pp. 357–366, 2018.
+[4]
+P. T. Pln and P. Area, “Peramalan Konsumsi Energi Listrik untuk Sektor,” vol. 12, no. 1, 2023.
+[5]
+I. M. Sumerta Yasa, “Sistem Monitoring Proteksi Arus Lebih Menggunakan Sensor Pzem-004T Berbasis Mikrokontroler Dan Internet of Things,” 
+J. Ilm. Vastuwidya
+, vol. 8, no. 1, pp. 32–38, 2025, doi: 10.47532/jiv.v8i1.1203.
+[6]
+M. F. Azima and R. Setiawansyah, “Penerapan Double Exponential Smoothing dalam Sistem Prediksi Penyediaan Stok Madu pada UMKM Al-Ghifary,” vol. 5, no. 4, pp. 1171–1185, 2026.
+[7]
+R. Bangun, S. Monitoring, M. A. Asyhar, R. N. Ahmad, M. Surakarta, and J. A. Yani, “CONTROLLING PENGG U NAAN DAYA LISTRIK RUMAH TANGGA BERBASIS INTERNET OF THINGS MENGGUNAKAN ESP32 DAN APLIKASI TELEGRAM”.
+[8]
+K. J. Purjianto and M. N. Faiq, “Prototipe Monitoring Energi Listrik Berbasis Internet of Things (IoT) guna Mewujudkan Rumah Pintar,” 
+LOFIAN J. Teknol. Inf. dan Komun.
+, vol. 4, no. 1, pp. 1–6, 2024.
+[9]
+W. F. Galla and N. J. Meok, “PERANCANGAN DAN IMPLEMENTASI SMART KWH METER BERBASIS ESP32 UNTUK MONITORING DAN PENGENDALIAN KONSUMSI ENERGI LISTRIK RUMAH TANGGA 1300 VA Info Artikel,” vol. XIV, no. 2, pp. 144–150, 2025, doi: 10.35508/jme.v0i0.26954.
+[10]
+S. Nurazizah, “Integrasi Sensor Iot Pada Sistem Rumah Cerdas Untuk 
+Deteksi Kebakaran Dan Gas Berbahaya,” 
+J. Inform. dan Tek. Elektro Terap.
+, vol. 14, no. 1, 2026, doi: 10.23960/jitet.v14i1.8257.
+[11]
+I. Imsar, E. Dan, and B. Islam, “Strategi Home Industri Konveksi Dalam Meningkatkan Pendapatan Rumah Tangga Masyarakat Kota Binjai (Studi Kasus Abu Bakar Konveksi Mencirim Binjai Timur),” 
+J. Ilmu Manaj. Dan Kewirausahaan
+, vol. 1, no. 2, pp. 48–59, 2021.
+[12]
+R. Sulistyowati, N. S. Erwanti, P. Studi, and T. Elektro, “PROTOTIPE SISTEM MONITORING INSTALASI DAYA LISTRIK,” pp. 738–742.
+[13]
+K. C. Pradana, “MENGGUNAKAN METODE AUTOREGRESSIVE INTEGRATED MOVING AVERAGE ( ARIMA ),” 2021.
+[14]
+S. A. Arrahma and R. Mukhaiyar, “Pengujian Esp32-Cam Berbasis Mikrokontroler ESP32,” 
+JTEIN J. Tek. Elektro Indones.
+, vol. 4, no. 1, pp. 60–66, 2023.
+[15]
+Khairul Umurani, Rahmatullah, Muharnif M, Sri Asfiati, and Didik Mei Sandi, “Pembuatan Alat Pelipat Baju Otomatis Berbasis Arduino Uno Untuk UMKM Laundry,” 
+J. Rekayasa Mater. Manufaktur dan Energi
+, vol. 8, no. 1, pp. 97–106, 2025, [Online]. Available: http://jurnal.umsu.ac.id/index.php/RMME
+[16]
+Syalaisha Maliota Safrilly; Rohjai Badarudin, “ELECTROPS Jurnal Ilmiah Teknik Elektro Sistem Monitoring Suhu secara Real-Time berbasis Arduino Uno untuk Pemantauan Lingkungan,” 
+EELCTROPS J. Ilm. Tek. Elektro
+, vol. 3, no. 2, pp. 1–7, 2024, [Online]. Available: http://e-journals.unmul.ac.id/index.php/TE
+[17]
+G. Gunawan, “Sistem Kontrol dan Monitoring Beban Listrik di Pondok Pesantren Al-Husna Pontianak Berbasis IoT,” 
+J. Litek  J. List. Telekomun. Elektron.
+, vol. 22, no. 2, pp. 94–101, 2025, doi: 10.30811/litek.v22i2.80.
+[18]
+2024 Sadewa et al., “SISTEM INFORMASI AKADEMIK BERBASIS WEB PADA SMK AL-ISLAM SURAKARTA Fakultas Ilmu Komputer Universitas Duta Bangsa Surakarta Abstraksi Keywords : Pendahuluan Sadewa dkk , Sistem Informasi Akademik Berbasis Web Pada Smk Al-Islam Surakarta Tinjauan Pustaka M,” vol. 6, no. 1, pp. 63–69, 2024.
+[19]
+D. Rustiana 
+et al.
+, “SISTEM OBSERVASI LINGKUNGAN OTOMATIS SEBAGAI PENCEGAHAN KEBAKARAN DENGAN INTEGRASI SENSOR GAS MQ-2 DAN ESP8266,” vol. 12, no. 1, pp. 1–12, 2026.

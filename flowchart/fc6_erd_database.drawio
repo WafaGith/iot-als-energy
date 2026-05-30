@@ -1,0 +1,99 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- TITLE -->
+    <mxCell id="title" value="Entity Relationship Diagram (ERD) - ALS Energy" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+      <mxGeometry x="200" y="40" width="400" height="30" as="geometry"/>
+    </mxCell>
+
+    <!-- ENTITY 1: ADMINS -->
+    <mxCell id="t_admins" value="&lt;b&gt;admins&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="120" y="120" width="160" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="a_id" value="PK id INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_admins">
+      <mxGeometry y="30" width="160" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="a_usr" value="username VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_admins">
+      <mxGeometry y="50" width="160" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="a_pwd" value="password_hash VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_admins">
+      <mxGeometry y="70" width="160" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- ENTITY 2: MESIN -->
+    <mxCell id="t_mesin" value="&lt;b&gt;mesin&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="120" y="280" width="160" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="m_id" value="PK id_mesin INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_mesin">
+      <mxGeometry y="30" width="160" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="m_nama" value="nama_mesin VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_mesin">
+      <mxGeometry y="50" width="160" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="m_status" value="status VARCHAR" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_mesin">
+      <mxGeometry y="70" width="160" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- ENTITY 3: SENSOR DATA -->
+    <mxCell id="t_sensor" value="&lt;b&gt;sensor_data&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="480" y="200" width="200" height="210" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_id" value="PK id INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="30" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_time" value="timestamp DATETIME" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="50" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_mid" value="FK mesin_id INT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="70" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_v" value="volt FLOAT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="90" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_a" value="arus FLOAT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="110" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_w" value="daya FLOAT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="130" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_kwh" value="energi FLOAT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="150" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_hz" value="frekuensi FLOAT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="170" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="s_pf" value="pf FLOAT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="t_sensor">
+      <mxGeometry y="190" width="200" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- RELATIONS -->
+    <!-- Admin to Mesin: 1 to Many -->
+    <mxCell id="r1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=2;strokeColor=#666666;" edge="1" source="t_admins" target="t_mesin" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="200" y="210" as="sourcePoint"/>
+        <mxPoint x="200" y="280" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="label1" value="mengelola" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontColor=#333333;" vertex="1" connectable="0" parent="r1">
+      <mxGeometry x="0.1" y="0" relative="1" as="geometry">
+        <mxPoint x="30" y="-5" as="offset"/>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- Mesin to Sensor Data: 1 to Many -->
+    <mxCell id="r2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;strokeWidth=2;strokeColor=#666666;" edge="1" source="t_mesin" target="t_sensor" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="280" y="325" as="sourcePoint"/>
+        <mxPoint x="480" y="325" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="label2" value="menghasilkan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontColor=#333333;" vertex="1" connectable="0" parent="r2">
+      <mxGeometry x="0.1" y="0" relative="1" as="geometry">
+        <mxPoint x="-15" y="-10" as="offset"/>
+      </mxGeometry>
+    </mxCell>
+
+  </root>
+</mxGraphModel>
