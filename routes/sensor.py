@@ -109,17 +109,19 @@ def receive_sensor_data():
             pass
 
         # Hanya simpan ke DB dan jalankan alert jika parameter 'save' bernilai True
+        print(f"[DEBUG] Received sensor data payload: {data}")
         if data.get('save') == True:
-
-
+            print("[DEBUG] Saving data to database...")
             if 'm1' in data:
                 m1 = data['m1']
                 execute_query("INSERT INTO sensor_data (mesin_id, volt, arus, daya, energi, frekuensi, pf) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
                               (1, m1.get('v',0), m1.get('i',0), m1.get('p',0), m1.get('e',0), m1.get('f',0), m1.get('pf',0)), commit=True)
+                print("[DEBUG] Mesin 1 saved.")
             if 'm2' in data:
                 m2 = data['m2']
                 execute_query("INSERT INTO sensor_data (mesin_id, volt, arus, daya, energi, frekuensi, pf) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
                               (2, m2.get('v',0), m2.get('i',0), m2.get('p',0), m2.get('e',0), m2.get('f',0), m2.get('pf',0)), commit=True)
+                print("[DEBUG] Mesin 2 saved.")
                 
             try:
                 settings_data = execute_query("SELECT * FROM settings", fetch_all=True)

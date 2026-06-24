@@ -296,7 +296,6 @@ def main():
         ("Tren\nbₜ",     14),
         ("Forecast\nFₜ", 14),
         ("Error\n(Xₜ – Fₜ)", 14),
-        ("Abs. Error\n|Error|", 14),
         ("APE\n(%)",     12),
         ("Keterangan",   20),
     ]
@@ -337,7 +336,7 @@ def main():
         if isinstance(ape, float):
             ape_values.append(ape)
 
-        row_data = [t + 1, dates[t], actual, s_v, b_v, f_v, err, abs_e, ape, keterangan(t)]
+        row_data = [t + 1, dates[t], actual, s_v, b_v, f_v, err, ape, keterangan(t)]
         for col_i, val in enumerate(row_data):
             col = col_start + col_i
             is_num = isinstance(val, float) and val != "-"
@@ -351,10 +350,10 @@ def main():
             elif col_i == 5:  # Forecast
                 cell.font = Font(name='Calibri', bold=True, color=C_FORECAST, size=10)
                 if is_num: cell.number_format = '0.0000'
-            elif col_i in (3, 4, 6, 7):
+            elif col_i in (3, 4, 6):
                 cell.font = Font(name='Calibri', size=10)
                 if is_num: cell.number_format = '0.0000'
-            elif col_i == 8:  # APE
+            elif col_i == 7:  # APE
                 cell.font = Font(name='Calibri', size=10)
                 if is_num: cell.number_format = '0.0000'
             else:
@@ -364,7 +363,7 @@ def main():
 
     # ─── Baris MAPE ───────────────────────────────────────────────────────────
     r += 1
-    ws1.merge_cells(f'A{r}:H{r}')
+    ws1.merge_cells(f'A{r}:G{r}')
     c = ws1.cell(r, 1, "MAPE (Mean Absolute Percentage Error)")
     mape_color = C_GOOD if final_mape < 20 else C_WARN if final_mape < 50 else C_BAD
     c.font      = Font(name='Calibri', bold=True, size=11, color='1A1A1A')
@@ -372,7 +371,7 @@ def main():
     c.alignment = CENTER
     c.border    = thin_border()
 
-    c2 = ws1.cell(r, 9, round(final_mape, 4))
+    c2 = ws1.cell(r, 8, round(final_mape, 4))
     c2.font          = Font(name='Calibri', bold=True, size=11)
     c2.number_format = '0.0000"%"'
     c2.fill          = make_fill(mape_color)

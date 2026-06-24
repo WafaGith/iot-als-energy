@@ -89,36 +89,96 @@ def get_sensor_history(current_user):
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     mesin_id = request.args.get('mesin_id')
+    view = request.args.get('view', 'minute') # 'minute' or 'daily'
     
-    query = "SELECT * FROM sensor_data WHERE 1=1"
     params = []
     
-    if start_date:
-        query += " AND timestamp >= %s"
-        params.append(start_date + " 00:00:00")
-    if end_date:
-        query += " AND timestamp <= %s"
-        params.append(end_date + " 23:59:59")
-    if mesin_id and mesin_id != 'all':
-        query += " AND mesin_id = %s"
-        params.append(int(mesin_id))
+    if view == 'daily':
+        # Daily aggregated view query
+        query = """
+            SELECT 
+                DATE(timestamp) as tanggal, 
+                mesin_id, 
+                AVG(volt) as volt, 
+                AVG(arus) as arus, 
+                AVG(daya) as daya, 
+                MAX(daya) as max_daya,
+                (AVG(daya) * 24) / 1000.0 as energi, 
+                AVG(frekuensi) as frekuensi, 
+                AVG(pf) as pf
+            FROM sensor_data
+            WHERE 1=1
+        """
+        if start_date:
+            query += " AND timestamp >= %s"
+            params.append(start_date + " 00:00:00")
+        if end_date:
+            query += " AND timestamp <= %s"
+            params.append(end_date + " 23:59:59")
+        if mesin_id and mesin_id != 'all':
+            query += " AND mesin_id = %s"
+            params.append(int(mesin_id))
+            
+        query += " GROUP BY DATE(timestamp), mesin_id"
         
-    # Get total count first
-    count_query = query.replace("SELECT *", "SELECT COUNT(*) as total")
-    total_res = execute_query(count_query, tuple(params) if params else None, fetch_one=True)
-    total_count = total_res['total'] if total_res else 0
+        # Get count of daily aggregated rows
+        count_query = f"SELECT COUNT(*) as total FROM ({query}) sub"
+        total_res = execute_query(count_query, tuple(params) if params else None, fetch_one=True)
+        total_count = total_res['total'] if total_res else 0
         
-    sort_order = request.args.get('sort', 'desc').upper()
-    if sort_order not in ['ASC', 'DESC']:
-        sort_order = 'DESC'
+        sort_order = request.args.get('sort', 'desc').upper()
+        if sort_order not in ['ASC', 'DESC']:
+            sort_order = 'DESC'
+            
+        query += f" ORDER BY tanggal {sort_order} LIMIT {limit} OFFSET {offset}"
         
-    query += f" ORDER BY timestamp {sort_order} LIMIT {limit} OFFSET {offset}"
-    
-    data = execute_query(query, tuple(params) if params else None, fetch_all=True)
-    if data:
-        for row in data: row['timestamp'] = row['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
-    else: 
-        data = []
+        data = execute_query(query, tuple(params) if params else None, fetch_all=True)
+        if data:
+            for row in data:
+                row['timestamp'] = row['tanggal'].strftime("%Y-%m-%d")
+                row['volt'] = round(row['volt'], 2)
+                row['arus'] = round(row['arus'], 3)
+                row['daya'] = round(row['daya'], 2)
+                if 'max_daya' in row and row['max_daya'] is not None:
+                    row['max_daya'] = round(row['max_daya'], 2)
+                else:
+                    row['max_daya'] = row['daya']
+                row['energi'] = round(row['energi'], 3)
+                row['frekuensi'] = round(row['frekuensi'], 2)
+                row['pf'] = round(row['pf'], 2)
+        else:
+            data = []
+            
+    else:
+        # Default minute-by-minute raw sensor logs view
+        query = "SELECT * FROM sensor_data WHERE 1=1"
+        if start_date:
+            query += " AND timestamp >= %s"
+            params.append(start_date + " 00:00:00")
+        if end_date:
+            query += " AND timestamp <= %s"
+            params.append(end_date + " 23:59:59")
+        if mesin_id and mesin_id != 'all':
+            query += " AND mesin_id = %s"
+            params.append(int(mesin_id))
+            
+        # Get total count first
+        count_query = query.replace("SELECT *", "SELECT COUNT(*) as total")
+        total_res = execute_query(count_query, tuple(params) if params else None, fetch_one=True)
+        total_count = total_res['total'] if total_res else 0
+            
+        sort_order = request.args.get('sort', 'desc').upper()
+        if sort_order not in ['ASC', 'DESC']:
+            sort_order = 'DESC'
+            
+        query += f" ORDER BY timestamp {sort_order} LIMIT {limit} OFFSET {offset}"
+        
+        data = execute_query(query, tuple(params) if params else None, fetch_all=True)
+        if data:
+            for row in data: 
+                row['timestamp'] = row['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
+        else: 
+            data = []
         
     total_pages = (total_count + limit - 1) // limit if limit > 0 else 1
     

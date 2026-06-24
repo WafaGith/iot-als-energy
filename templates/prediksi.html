@@ -352,13 +352,12 @@
                                             <th class="text-right text-sky-400">Aktual (kWh)</th>
                                             <th class="text-right text-amber-400">Forecast (kWh)</th>
                                             <th class="text-right">Error</th>
-                                            <th class="text-right">Absolute Error</th>
                                             <th class="text-right text-emerald-400">APE (%)</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table_body">
                                         <tr>
-                                            <td colspan="6" class="text-center text-gray-600 italic py-10">
+                                            <td colspan="5" class="text-center text-gray-600 italic py-10">
                                                 Belum ada data. Tekan tombol "Hitung Prediksi" untuk memuat hasil.
                                             </td>
                                         </tr>
@@ -504,21 +503,20 @@
             const slice = globalTableData.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
 
             if (slice.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-600 italic py-10">Tidak ada data.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-600 italic py-10">Tidak ada data.</td></tr>`;
                 return;
             }
 
             slice.forEach(r => {
                 const errColor = r.error < 0 ? 'text-red-400' : 'text-emerald-400';
                 const apeColor = r.ape > 20 ? 'text-yellow-400' : 'text-gray-300';
-                const isInit = r.ape === 0 && r.abs_error === 0;
+                const isInit = r.ape === 0;
                 tbody.innerHTML += `
                     <tr>
                         <td class="text-gray-300 font-medium">${r.date}</td>
                         <td class="text-right text-sky-300 font-semibold">${r.actual.toFixed(2)}</td>
                         <td class="text-right text-amber-300">${r.forecast.toFixed(2)}</td>
                         <td class="text-right ${errColor}">${isInit ? '<span class="text-gray-600">—</span>' : r.error.toFixed(2)}</td>
-                        <td class="text-right text-gray-300">${isInit ? '<span class="text-gray-600">—</span>' : r.abs_error.toFixed(2)}</td>
                         <td class="text-right font-semibold ${apeColor}">${isInit ? '<span class="text-gray-600">—</span>' : r.ape.toFixed(2) + '%'}</td>
                     </tr>`;
             });

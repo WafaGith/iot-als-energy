@@ -29,8 +29,8 @@ def generate_seed_data():
     ]
     
     # Energi kumulatif awal
-    energi_m1 = 120.50
-    energi_m2 = 85.25
+    energi_m1 = 0.0
+    energi_m2 = 0.0
     
     data_to_insert = []
     
@@ -88,28 +88,40 @@ def generate_seed_data():
             
             if hour < 2:  # 00:00 - 01:59 (sisa shift malam hari sebelumnya)
                 if prev_m1_shift_malam_aktif:
-                    daya_m1 = random.uniform(400, 600)
-                    pf_m1 = random.uniform(0.85, 0.90)
+                    if random.random() < 0.2: # Jeda ganti kain
+                        daya_m1 = random.uniform(20, 50)
+                        pf_m1 = random.uniform(0.50, 0.60)
+                    else:
+                        daya_m1 = random.uniform(300, 390)
+                        pf_m1 = random.uniform(0.85, 0.90)
                     arus_m1 = daya_m1 / (volt * pf_m1)
-            elif 2 <= hour < 9:  # 02:00 - 08:59 (MATI TOTAL)
+            elif 2 <= hour < 8 or (hour == 8 and minute < 10):  # 02:00 - 08:09 (MATI TOTAL)
                 daya_m1 = 0.0
                 arus_m1 = 0.0
                 pf_m1 = 0.0
-            elif hour == 9 and minute < 30:  # 09:00 - 09:29 (lonjakan startup)
-                daya_m1 = random.uniform(1000, 1330)
+            elif hour == 8 and 10 <= minute <= 30:  # 08:10 - 08:30 (lonjakan startup)
+                daya_m1 = random.uniform(900, 1083)
                 pf_m1 = random.uniform(0.90, 0.95)
                 arus_m1 = daya_m1 / (volt * pf_m1)
-            elif 9 <= hour < 12:  # 09:30 - 11:59 (produksi aktif pagi)
-                daya_m1 = random.uniform(400, 600)
-                pf_m1 = random.uniform(0.85, 0.90)
+            elif (hour == 8 and minute > 30) or (9 <= hour < 12):  # 08:31 - 11:59 (produksi aktif pagi)
+                if random.random() < 0.2: # Jeda ganti kain
+                    daya_m1 = random.uniform(20, 50)
+                    pf_m1 = random.uniform(0.50, 0.60)
+                else:
+                    daya_m1 = random.uniform(300, 390)
+                    pf_m1 = random.uniform(0.85, 0.90)
                 arus_m1 = daya_m1 / (volt * pf_m1)
             elif 12 <= hour < 13:  # 12:00 - 12:59 (istirahat siang)
                 daya_m1 = 0.0
                 arus_m1 = 0.0
                 pf_m1 = 0.0
             elif 13 <= hour < 17:  # 13:00 - 16:59 (produksi aktif siang)
-                daya_m1 = random.uniform(400, 600)
-                pf_m1 = random.uniform(0.85, 0.90)
+                if random.random() < 0.2: # Jeda ganti kain
+                    daya_m1 = random.uniform(20, 50)
+                    pf_m1 = random.uniform(0.50, 0.60)
+                else:
+                    daya_m1 = random.uniform(300, 390)
+                    pf_m1 = random.uniform(0.85, 0.90)
                 arus_m1 = daya_m1 / (volt * pf_m1)
             elif 17 <= hour < 18:  # 17:00 - 17:59 (istirahat sore)
                 daya_m1 = 0.0
@@ -117,12 +129,17 @@ def generate_seed_data():
                 pf_m1 = 0.0
             elif 18 <= hour <= 23:  # 18:00 - 23:59 (shift malam aktif)
                 if m1_shift_malam_aktif:
-                    if random.random() < 0.1:  # 10% peluang lonjakan
-                        daya_m1 = random.uniform(1000, 1330)
+                    if hour == 18 and minute <= 30:  # 18:00 - 18:30 (lonjakan startup shift 2)
+                        # Buat peluang muncul angka presisi tinggi mendekati 1083
+                        daya_m1 = random.uniform(1000, 1083)
                         pf_m1 = random.uniform(0.90, 0.95)
                     else:
-                        daya_m1 = random.uniform(400, 600)
-                        pf_m1 = random.uniform(0.85, 0.90)
+                        if random.random() < 0.2: # Jeda ganti kain
+                            daya_m1 = random.uniform(20, 50)
+                            pf_m1 = random.uniform(0.50, 0.60)
+                        else:
+                            daya_m1 = random.uniform(300, 390)
+                            pf_m1 = random.uniform(0.85, 0.90)
                     arus_m1 = daya_m1 / (volt * pf_m1)
             
             energi_m1 += (daya_m1 / 1000.0) * (interval_menit / 60.0)
@@ -142,37 +159,48 @@ def generate_seed_data():
             
             if hour < 1:  # 00:00 - 00:59 (carry-over lembur sampai jam 1 malem)
                 if prev_m2_late_overtime_active:
-                    daya_m2 = random.uniform(250, 500)
+                    daya_m2 = random.uniform(180, 200)
                     pf_m2 = random.uniform(0.85, 0.92)
                     arus_m2 = daya_m2 / (volt * pf_m2)
             elif 1 <= hour < 9:  # 01:00 - 08:59 (MATI TOTAL)
                 daya_m2 = 0.0
                 arus_m2 = 0.0
                 pf_m2 = 0.0
-            elif 9 <= hour < 12:  # 09:00 - 11:59 (produksi normal)
-                daya_m2 = random.uniform(100, 200)
+            elif hour == 9 and minute < 30:  # 09:00 - 09:29 (lonjakan startup)
+                daya_m2 = random.uniform(150, 250)
+                pf_m2 = random.uniform(0.75, 0.85)
+                arus_m2 = daya_m2 / (volt * pf_m2)
+            elif 9 <= hour < 12:  # 09:30 - 11:59 (produksi normal)
+                daya_m2 = random.uniform(180, 200)
                 pf_m2 = random.uniform(0.75, 0.85)
                 arus_m2 = daya_m2 / (volt * pf_m2)
             elif 12 <= hour < 13:  # 12:00 - 12:59 (istirahat siang)
                 daya_m2 = 0.0
                 arus_m2 = 0.0
                 pf_m2 = 0.0
-            elif 13 <= hour < 17:  # 13:00 - 16:59 (produksi aktif normal)
-                daya_m2 = random.uniform(100, 250)
+            elif hour == 13 and minute < 30:  # 13:00 - 13:29 (lonjakan siang)
+                daya_m2 = random.uniform(150, 250)
+                pf_m2 = random.uniform(0.75, 0.88)
+                arus_m2 = daya_m2 / (volt * pf_m2)
+            elif 13 <= hour < 17:  # 13:30 - 16:59 (produksi aktif normal)
+                daya_m2 = random.uniform(180, 200)
                 pf_m2 = random.uniform(0.75, 0.88)
                 arus_m2 = daya_m2 / (volt * pf_m2)
             elif 17 <= hour < 20:  # 17:00 - 19:59 (lembur biasa / high speed)
                 if m2_lembur_hari_ini:
-                    daya_m2 = random.uniform(250, 500)
+                    if hour == 17 and minute < 30:
+                        daya_m2 = random.uniform(150, 250)
+                    else:
+                        daya_m2 = random.uniform(180, 200)
                     pf_m2 = random.uniform(0.85, 0.92)
                     arus_m2 = daya_m2 / (volt * pf_m2)
             elif 20 <= hour <= 23:  # 20:00 - 23:59
                 if is_late_overtime_day:  # Lembur sampai jam 1 malem (terus beroperasi)
-                    daya_m2 = random.uniform(250, 500)
+                    daya_m2 = random.uniform(180, 200)
                     pf_m2 = random.uniform(0.85, 0.92)
                     arus_m2 = daya_m2 / (volt * pf_m2)
                 elif is_standard_overtime_day and hour < 23:  # Lembur sampai jam 11 malem (23:00)
-                    daya_m2 = random.uniform(250, 500)
+                    daya_m2 = random.uniform(180, 200)
                     pf_m2 = random.uniform(0.85, 0.92)
                     arus_m2 = daya_m2 / (volt * pf_m2)
             

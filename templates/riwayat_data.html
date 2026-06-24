@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/sidebar.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="antialiased text-gray-200">
@@ -48,6 +49,25 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Tabs Navigasi -->
+                    <div class="flex gap-2 mb-6 border-b border-gray-700/50 pb-px">
+                        <button id="tab-minute" class="px-5 py-2.5 text-sm font-semibold border-b-2 border-sky-400 text-sky-400 bg-sky-500/10 rounded-t-xl transition-all duration-300">
+                            <i class="fa-solid fa-clock-rotate-left mr-2"></i> Riwayat per Menit
+                        </button>
+                        <button id="tab-daily" class="px-5 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 rounded-t-xl transition-all duration-300">
+                            <i class="fa-solid fa-calendar-day mr-2"></i> Riwayat Harian
+                        </button>
+                    </div>
+                    
+                    <!-- Quick Filters -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button class="quick-filter-btn px-3 py-1 text-xs font-medium rounded-full bg-gray-800 text-gray-300 border border-gray-600 hover:bg-sky-500/20 hover:text-sky-400 hover:border-sky-500/50 transition-colors" data-days="0">Hari Ini</button>
+                        <button class="quick-filter-btn px-3 py-1 text-xs font-medium rounded-full bg-gray-800 text-gray-300 border border-gray-600 hover:bg-sky-500/20 hover:text-sky-400 hover:border-sky-500/50 transition-colors" data-days="7">7 Hari Terakhir</button>
+                        <button class="quick-filter-btn px-3 py-1 text-xs font-medium rounded-full bg-gray-800 text-gray-300 border border-gray-600 hover:bg-sky-500/20 hover:text-sky-400 hover:border-sky-500/50 transition-colors" data-days="30">Bulan Ini</button>
+                        <button class="quick-filter-btn px-3 py-1 text-xs font-medium rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/50 transition-colors" data-days="all">Semua Waktu</button>
+                    </div>
+
                     <div class="filter-bar">
                         <div class="filter-group">
                             <label>Mulai Dari</label>
@@ -79,16 +99,22 @@
                         </div>
                     </div>
 
+
+                    <!-- Chart Container -->
+                    <div class="mb-6 bg-gray-800/30 border border-gray-700/50 rounded-xl p-4" style="height: 320px;">
+                        <canvas id="historyChart"></canvas>
+                    </div>
+
                     <div class="overflow-x-auto rounded-lg border border-gray-700/50">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr>
                                     <th>Waktu</th>
                                     <th>Mesin</th>
-                                    <th>Tegangan (V)</th>
-                                    <th>Arus (A)</th>
-                                    <th>Daya (W)</th>
-                                    <th>Energi (kWh)</th>
+                                    <th id="th-volt">Tegangan (V)</th>
+                                    <th id="th-arus">Arus (A)</th>
+                                    <th id="th-daya">Daya (W)</th>
+                                    <th id="th-energy">Energi (kWh)</th>
                                     <th>Frekuensi (Hz)</th>
                                     <th>PF</th>
                                 </tr>
@@ -131,8 +157,136 @@
     <script>
         window.api.checkAuth();
 
+        
+        let historyChartInstance = null;
+
+        function formatDateToYYYYMMDD(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.quick-filter-btn').forEach(b => {
+                    b.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/50');
+                    b.classList.add('bg-gray-800', 'text-gray-300', 'border-gray-600');
+                });
+                
+                this.classList.remove('bg-gray-800', 'text-gray-300', 'border-gray-600');
+                this.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/50');
+
+                const days = this.getAttribute('data-days');
+                const endDateInput = document.getElementById('filter_end');
+                const startDateInput = document.getElementById('filter_start');
+
+                if (days === 'all') {
+                    startDateInput.value = '';
+                    endDateInput.value = '';
+                } else {
+                    const today = new Date();
+                    endDateInput.value = formatDateToYYYYMMDD(today);
+                    
+                    const startDate = new Date();
+                    startDate.setDate(today.getDate() - parseInt(days));
+                    startDateInput.value = formatDateToYYYYMMDD(startDate);
+                }
+
+                currentPage = 1;
+                fetchHistory();
+            });
+        });
+
+        function updateChart(data, isDaily) {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            
+            if (historyChartInstance) {
+                historyChartInstance.destroy();
+            }
+
+            // We sort data ascending for chart (chronological left to right)
+            const chartData = [...data].reverse();
+
+            const labels = chartData.map(d => isDaily ? d.timestamp : window.utils.formatDate(d.timestamp));
+            
+            let datasetLabel = isDaily ? 'Konsumsi Energi Harian (kWh)' : 'Daya (W)';
+            let datasetData = chartData.map(d => isDaily ? d.energi : d.daya);
+            let chartType = isDaily ? 'bar' : 'line';
+            let bgColor = isDaily ? 'rgba(56, 189, 248, 0.5)' : 'rgba(16, 185, 129, 0.1)';
+            let borderColor = isDaily ? 'rgba(56, 189, 248, 1)' : 'rgba(16, 185, 129, 1)';
+
+            historyChartInstance = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: datasetLabel,
+                        data: datasetData,
+                        backgroundColor: bgColor,
+                        borderColor: borderColor,
+                        borderWidth: 2,
+                        fill: !isDaily,
+                        tension: 0.4,
+                        pointRadius: isDaily ? 0 : 2,
+                        pointBackgroundColor: borderColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#9ca3af' } }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#6b7280', maxTicksLimit: 10 },
+                            grid: { color: 'rgba(75, 85, 99, 0.2)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#6b7280' },
+                            grid: { color: 'rgba(75, 85, 99, 0.2)' }
+                        }
+                    }
+                }
+            });
+        }
+
         let currentPage = 1;
         let totalPages = 1;
+        let activeTab = 'minute'; // 'minute' or 'daily'
+
+        // Tabs click handlers
+        const tabMinute = document.getElementById('tab-minute');
+        const tabDaily = document.getElementById('tab-daily');
+
+        if (tabMinute && tabDaily) {
+            tabMinute.addEventListener('click', () => {
+                if (activeTab !== 'minute') {
+                    activeTab = 'minute';
+                    // Update tab classes
+                    tabMinute.className = "px-5 py-2.5 text-sm font-semibold border-b-2 border-sky-400 text-sky-400 bg-sky-500/10 rounded-t-xl transition-all duration-300";
+                    tabDaily.className = "px-5 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 rounded-t-xl transition-all duration-300";
+                    currentPage = 1;
+                    fetchHistory();
+                }
+            });
+
+            tabDaily.addEventListener('click', () => {
+                if (activeTab !== 'daily') {
+                    activeTab = 'daily';
+                    // Update tab classes
+                    tabDaily.className = "px-5 py-2.5 text-sm font-semibold border-b-2 border-sky-400 text-sky-400 bg-sky-500/10 rounded-t-xl transition-all duration-300";
+                    tabMinute.className = "px-5 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 rounded-t-xl transition-all duration-300";
+                    currentPage = 1;
+                    fetchHistory();
+                }
+            });
+        }
 
         async function fetchHistory() {
             const btn = document.getElementById('btn-refresh');
@@ -140,13 +294,30 @@
             if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
             if (btnFilterBtn) btnFilterBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
 
+            // Dynamically change table header names depending on the active tab
+            const thVolt = document.getElementById('th-volt');
+            const thArus = document.getElementById('th-arus');
+            const thDaya = document.getElementById('th-daya');
+            const thEnergy = document.getElementById('th-energy');
+            if (activeTab === 'minute') {
+                if (thVolt) thVolt.innerText = 'Tegangan (V)';
+                if (thArus) thArus.innerText = 'Arus (A)';
+                if (thDaya) thDaya.innerText = 'Daya (W)';
+                if (thEnergy) thEnergy.innerText = 'Energi (kWh)';
+            } else {
+                if (thVolt) thVolt.innerText = 'Avg Volt (V)';
+                if (thArus) thArus.innerText = 'Avg Arus (A)';
+                if (thDaya) thDaya.innerText = 'Avg Daya (W)';
+                if (thEnergy) thEnergy.innerText = 'Konsumsi (kWh/hari)';
+            }
+
             const startDate = document.getElementById('filter_start').value;
             const endDate = document.getElementById('filter_end').value;
             const mesinId = document.getElementById('filter_mesin').value;
             const limit = document.getElementById('filter_limit') ? document.getElementById('filter_limit').value : 20;
             const sortOrder = document.getElementById('filter_sort') ? document.getElementById('filter_sort').value : 'desc';
 
-            let query = `/history/sensor?limit=${limit}&page=${currentPage}&sort=${sortOrder}`;
+            let query = `/history/sensor?limit=${limit}&page=${currentPage}&sort=${sortOrder}&view=${activeTab}`;
             if (startDate) query += `&start_date=${startDate}`;
             if (endDate) query += `&end_date=${endDate}`;
             if (mesinId && mesinId !== 'all') query += `&mesin_id=${mesinId}`;
@@ -157,19 +328,30 @@
 
             if (!response.error && response.data && response.data.length > 0) {
                 response.data.forEach(row => {
+
+                    let voltClass = "";
+                    if (row.volt < 200 || row.volt > 240) voltClass = "text-rose-400 font-bold";
+                    
+                    let pfClass = "";
+                    if (row.pf < 0.85) pfClass = "text-rose-400 font-bold";
+
                     const tr = document.createElement('tr');
+                    const formattedTime = activeTab === 'minute' ? window.utils.formatDate(row.timestamp) : row.timestamp;
+                    
                     tr.innerHTML = `
-                        <td class="font-mono text-xs text-gray-400">${window.utils.formatDate(row.timestamp)}</td>
+                        <td class="font-mono text-xs text-gray-400">${formattedTime}</td>
                         <td><span class="badge badge-blue">Mesin ${row.mesin_id}</span></td>
-                        <td>${window.utils.formatNumber(row.volt)} V</td>
+                        <td class="${voltClass}">${window.utils.formatNumber(row.volt)} V</td>
                         <td>${window.utils.formatNumber(row.arus)} A</td>
                         <td class="text-emerald-400 font-semibold">${window.utils.formatNumber(row.daya)} W</td>
                         <td>${window.utils.formatNumber(row.energi, 3)} kWh</td>
                         <td>${window.utils.formatNumber(row.frekuensi)} Hz</td>
-                        <td>${window.utils.formatNumber(row.pf, 2)}</td>
+                        <td class="${pfClass}">${window.utils.formatNumber(row.pf, 2)}</td>
                     `;
                     tbody.appendChild(tr);
                 });
+
+                updateChart(response.data, activeTab === 'daily');
 
                 totalPages = response.total_pages || 1;
                 document.getElementById('page-info').innerText = `Hal ${currentPage} dari ${totalPages}`;
@@ -177,6 +359,11 @@
                 document.getElementById('btn-prev').disabled = currentPage <= 1;
                 document.getElementById('btn-next').disabled = currentPage >= totalPages;
             } else {
+                if (historyChartInstance) {
+                    historyChartInstance.destroy();
+                    historyChartInstance = null;
+                }
+
                 tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-500">Data history kosong.</td></tr>';
                 document.getElementById('page-info').innerText = `Hal 1 dari 1`;
                 document.getElementById('btn-prev').disabled = true;
@@ -236,7 +423,7 @@
             const sortOrder = document.getElementById('filter_sort') ? document.getElementById('filter_sort').value : 'desc';
 
             // Ambil semua data (limit besar) untuk diekspor sesuai filter
-            let query = `/history/sensor?limit=100000&page=1&sort=${sortOrder}`;
+            let query = `/history/sensor?limit=100000&page=1&sort=${sortOrder}&view=${activeTab}`;
             if (startDate) query += `&start_date=${startDate}`;
             if (endDate) query += `&end_date=${endDate}`;
             if (mesinId && mesinId !== 'all') query += `&mesin_id=${mesinId}`;
@@ -245,24 +432,36 @@
                 const response = await window.api.fetch(query);
                 if (!response.error && response.data && response.data.length > 0) {
                     // Format data untuk Excel
-                    const dataForExcel = response.data.map(row => ({
-                        'Waktu': window.utils.formatDate(row.timestamp),
-                        'Mesin': 'Mesin ' + row.mesin_id,
-                        'Tegangan (V)': row.volt,
-                        'Arus (A)': row.arus,
-                        'Daya (W)': row.daya,
-                        'Energi (kWh)': row.energi,
-                        'Frekuensi (Hz)': row.frekuensi,
-                        'Power Factor': row.pf
-                    }));
+                    const dataForExcel = response.data.map(row => {
+                        const formattedTime = activeTab === 'minute' ? window.utils.formatDate(row.timestamp) : row.timestamp;
+                        const labelEnergi = activeTab === 'minute' ? 'Energi Kumulatif (kWh)' : 'Konsumsi Harian (kWh/hari)';
+                        const labelVolt = activeTab === 'minute' ? 'Tegangan (V)' : 'Avg Tegangan (V)';
+                        const labelArus = activeTab === 'minute' ? 'Arus (A)' : 'Avg Arus (A)';
+                        const labelDaya = activeTab === 'minute' ? 'Daya (W)' : 'Avg Daya (W)';
+
+                        const mappedRow = {
+                            'Waktu/Tanggal': formattedTime,
+                            'Mesin': 'Mesin ' + row.mesin_id
+                        };
+                        mappedRow[labelVolt] = row.volt;
+                        mappedRow[labelArus] = row.arus;
+                        mappedRow[labelDaya] = row.daya;
+                        mappedRow[labelEnergi] = row.energi;
+                        mappedRow['Frekuensi (Hz)'] = row.frekuensi;
+                        mappedRow['Power Factor'] = row.pf;
+                        
+                        return mappedRow;
+                    });
 
                     // Buat Worksheet & Workbook
                     const ws = XLSX.utils.json_to_sheet(dataForExcel);
                     const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, "Riwayat Data");
+                    const sheetName = activeTab === 'minute' ? "Riwayat per Menit" : "Riwayat Harian";
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
                     // Simpan sebagai file .xlsx
-                    XLSX.writeFile(wb, "Riwayat_Data_Monitoring.xlsx");
+                    const fileName = activeTab === 'minute' ? "Riwayat_Data_Per_Menit.xlsx" : "Riwayat_Data_Harian.xlsx";
+                    XLSX.writeFile(wb, fileName);
                 } else {
                     alert('Tidak ada data untuk diekspor pada filter ini.');
                 }
